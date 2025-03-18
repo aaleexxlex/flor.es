@@ -28,3 +28,4 @@ El servicio estará disponible en:
 - **Maven**
 - **H2 Database (pruebas)**
 - **Git & GitHub**
+- **Thymeleaf**
