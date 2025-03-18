@@ -1,4 +1,3 @@
-# Flor.es - Online Flower Marketplace
 # 🌸 Flor.es - Online Flower Marketplace
 
 **Flor.es** es una plataforma digital diseñada para conectar a floricultores locales con clientes particulares y corporativos. Permite gestionar el ciclo completo de venta y entrega de flores frescas y ramos personalizados, optimizando la selección, compra y distribución.
