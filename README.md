@@ -12,10 +12,19 @@
 ## ⚙️ Instalación y Ejecución
 Para ejecutar el proyecto en tu entorno local:
 
-```bash
+
 # Clonar el repositorio
 git clone https://github.com/aaleexxlex/flor.es.git
 cd flor.es
 
 # Compilar y ejecutar con Maven
 ./mvnw spring-boot:run
+El servicio estará disponible en:  
+📌 **[http://localhost:8080/](http://localhost:8080/)**
+
+## 🛠️ Tecnologías Usadas
+- **Java 17**
+- **Spring Boot**
+- **Maven**
+- **H2 Database (pruebas)**
+- **Git & GitHub**
