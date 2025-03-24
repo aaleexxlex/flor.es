@@ -19,7 +19,7 @@ public class DetallePedido {
     private Pedido pedido;
     
     @ManyToOne
-    @JoinColumn(name = "id_producto")
+    @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
     
     // Getters y Setters

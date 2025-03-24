@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Getter @Setter
 @NoArgsConstructor
@@ -19,6 +20,9 @@ public class Producto {
     @JoinColumn(name = "email_floricultor")
     private Floricultor floricultor;
     
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<DetallePedido> detallesPedido;
     // Getters y Setters
 }
 

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Getter @Setter
@@ -16,6 +17,7 @@ public class Cliente {
     private String direccion;
 
     @OneToMany(mappedBy = "cliente")
+    @JsonIgnore 
     private List<Pedido> pedidos;
     
     // Getters y Setters

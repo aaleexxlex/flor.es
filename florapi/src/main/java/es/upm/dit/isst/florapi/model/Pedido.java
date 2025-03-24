@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Getter @Setter
@@ -28,6 +29,10 @@ public class Pedido {
     
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
     private Valoracion valoracion;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<DetallePedido> detallesPedido;
     
     // Getters y Setters
 }
