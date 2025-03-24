@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Catálogo de Productos</title>
+</head>
+<body>
+    <h1>Catálogo de Productos</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo de Flor</th>
+                <th>Precio</th>
+                <th>Floricultor</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="producto : ${productos}">
+                <td th:text="${producto.nombre}"></td>
+                <td th:text="${producto.tipoFlor}"></td>
+                <td th:text="${producto.precio}"></td>
+                <td th:text="${producto.floricultor.nombre}"></td>
+                <td>
+                    <!-- Coloca el enlace de eliminar dentro de la celda -->
+                    <a th:href="@{/catalogo/eliminar/{id}(id=${producto.idProducto})}">Eliminar</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="/catalogo/nuevo">Añadir Nuevo Producto</a>
+
+</body>
+</html>
+
+

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Inventario del Floricultor</title>
+</head>
+<body>
+    <h1>Inventario del Floricultor</h1>
+    <ul>
+        <li th:each="producto : ${productos}" th:text="${producto}"></li>
+    </ul>
+</body>
+</html>
