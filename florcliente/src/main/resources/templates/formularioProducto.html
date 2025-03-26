@@ -6,7 +6,7 @@
 <body>
     <h1>Añadir Nuevo Producto</h1>
 
-    <form action="#" th:action="@{/catalogo/nuevo2}" th:object="${producto}" method="post">
+    <form action="#" th:action="@{'/catalogo/productos/crear/' + ${floricultor.email} }" th:object="${producto}" method="post">
         <label for="nombre">Nombre</label>
         <input type="text" id="nombre" th:field="*{nombre}" required/>
 
@@ -18,10 +18,9 @@
         
         <label for="floricultor">Floricultor</label>
         <select id="floricultor" th:field="*{floricultor.email}" required>
-            <option th:each="floricultor : ${floricultores}" 
-                    th:value="${floricultor.email}" 
-                    th:text="${floricultor.nombre}"></option>
+            <option th:value="${floricultor.email}" th:text="${floricultor.nombre}"></option>
         </select>
+        
 
         <button type="submit">Crear Producto</button>
     </form>

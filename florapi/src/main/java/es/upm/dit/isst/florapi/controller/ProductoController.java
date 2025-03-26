@@ -31,6 +31,15 @@ public class ProductoController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/floricultor/{email}")
+    public ResponseEntity<List<Producto>> getProductosByFloricultorEmail(@PathVariable String email) {
+    List<Producto> productos = productoRepository.findByFloricultorEmail(email);
+    if (productos.isEmpty()) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    return ResponseEntity.ok(productos);
+    }
+
     // Crear un nuevo producto
     @PostMapping
     public ResponseEntity<Producto> createProducto(@RequestBody Producto newProducto) {

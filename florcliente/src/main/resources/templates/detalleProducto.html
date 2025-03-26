@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalle del Producto</title>
+</head>
+<body>
+    <h1>Detalle del Producto</h1>
+    
+    <table>
+        <tr>
+            <th>Nombre:</th>
+            <td th:text="${producto.nombre}"></td>
+        </tr>
+        <tr>
+            <th>Tipo de Flor:</th>
+            <td th:text="${producto.tipoFlor}"></td>
+        </tr>
+        <tr>
+            <th>Precio:</th>
+            <td th:text="${producto.precio}"></td>
+        </tr>
+        <tr>
+            <th>Floricultor:</th>
+            <td th:text="${producto.floricultor.nombre}"></td>
+        </tr>
+    </table>
+    
+    <a href="/catalogo">Volver al Catálogo</a>
+</body>
+</html>

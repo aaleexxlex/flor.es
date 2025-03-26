@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Arrays;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -28,50 +29,206 @@ class FlorController {
 
     private final RestTemplate restTemplate;
     private final String baseUrl = "http://localhost:8080"; // URL del backend
+    private boolean sesioniniciada;
 
     public FlorController() {
         this.restTemplate = new RestTemplate();
     }
 
-     // Mostrar catálogo de productos
-     @GetMapping
-     public String mostrarCatalogo(Model model) {
-         // Realizamos una solicitud GET para obtener la lista de productos
-         String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos").toUriString();
-         List<Producto> productos = restTemplate.getForObject(url, List.class);
- 
-         model.addAttribute("productos", productos);
-         return "catalogo"; // Vista para mostrar catálogo de productos
-     }
-    // Mostrar formulario para añadir un producto
-    // Mostrar formulario para añadir un producto
-    @GetMapping("/nuevo")
-    public String mostrarFormularioProducto(Model model) {
-        // Obtener la lista de floricultores desde el backend
-        String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/floricultores").toUriString();
-        List<Floricultor> floricultores = restTemplate.getForObject(url, List.class);
-
-        model.addAttribute("floricultores", floricultores);
-        model.addAttribute("producto", new Producto()); // Crear objeto Producto vacío para el formulario
-        return "formularioProducto"; // Vista para crear un nuevo producto
-    }
-    // Procesar el formulario para crear un nuevo producto
-    @PostMapping("/nuevo2")
-    public String crearProducto(@ModelAttribute Producto producto) {
-        // Enviar el nuevo producto al backend para almacenarlo
-        String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos").toUriString();
-        restTemplate.postForObject(url, producto, Producto.class);
-
-        return "redirect:/catalogo"; // Redirigir al catálogo después de crear el producto
+    // Método para iniciar sesión con email
+    @PostMapping("/iniciar-sesion")
+    public String iniciarSesion(@RequestParam("email") String email, Model model) {
+        try {
+            // Verificar si es cliente
+            String urlCliente = UriComponentsBuilder.fromHttpUrl(baseUrl + "/clientes/" + email).toUriString();
+            restTemplate.getForEntity(urlCliente, Cliente.class);
+            return "redirect:/catalogo/catalogoCliente/" + email;
+        } catch (Exception e) {
+            // Cliente no encontrado, intentar con floricultor
+            try {
+                String urlFloricultor = UriComponentsBuilder.fromHttpUrl(baseUrl + "/floricultores/" + email).toUriString();
+                restTemplate.getForEntity(urlFloricultor, Floricultor.class);
+                return "redirect:/catalogo/catalogoFloricultor/" + email;
+            } catch (Exception ex) {
+                // Ni cliente ni floricultor encontrados
+                return "redirect:/catalogo";
+            }
+        }
     }
 
-        // Eliminar un producto
-        @GetMapping("/eliminar/{id}")
-        public String eliminarProducto(@PathVariable Long id) {
-            // Realizamos una solicitud DELETE al backend para eliminar el producto con el id proporcionado
+    // Mostrar catálogo de productos
+    @GetMapping
+    public String mostrarCatalogo(Model model) {
+        try {
+            String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos").toUriString();
+            List<Producto> productos = restTemplate.getForObject(url, List.class);
+            model.addAttribute("productos", productos);
+        } catch (Exception e) {
+            model.addAttribute("productos", new ArrayList<Producto>());
+            // Puedes agregar un mensaje de error o algo similar
+        }
+        return "catalogo"; // Vista para mostrar catálogo de productos
+    }
+
+    @GetMapping("/catalogoCliente/{email}")
+    public String mostrarCatalogoCliente(@PathVariable String email, Model model) {
+        try {
+            // Obtener los datos del cliente
+            String urlCliente = UriComponentsBuilder.fromHttpUrl(baseUrl + "/clientes/" + email).toUriString();
+            Cliente cliente = restTemplate.getForObject(urlCliente, Cliente.class);
+            model.addAttribute("cliente", cliente);
+        } catch (Exception e) {
+            model.addAttribute("cliente", null);
+        }
+
+        try {
+            // Obtener los productos disponibles para el cliente
+            String urlProductos = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos").toUriString();
+            List<Producto> productos = restTemplate.getForObject(urlProductos, List.class);
+            model.addAttribute("productos", productos);
+        } catch (Exception e) {
+            model.addAttribute("productos", new ArrayList<Producto>());
+        }
+
+        return "catalogoCliente"; // Vista para mostrar catálogo del cliente
+    }
+
+    @GetMapping("/catalogoFloricultor/{email}")
+    public String mostrarCatalogoFloricultor(@PathVariable String email, Model model) {
+        try {
+            // Obtener los datos del floricultor
+            String urlFloricultor = UriComponentsBuilder.fromHttpUrl(baseUrl + "/floricultores/" + email).toUriString();
+            Floricultor floricultor = restTemplate.getForObject(urlFloricultor, Floricultor.class);
+            model.addAttribute("floricultor", floricultor);
+        } catch (Exception e) {
+            model.addAttribute("floricultor", null);
+        }
+
+        try {
+            // Obtener los productos disponibles para el floricultor
+            String urlProductos = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos").toUriString();
+            List<Producto> productos = restTemplate.getForObject(urlProductos, List.class);
+            model.addAttribute("productos", productos);
+        } catch (Exception e) {
+            model.addAttribute("productos", new ArrayList<Producto>());
+        }
+
+        return "catalogoFloricultor"; // Vista para mostrar catálogo del floricultor
+    }
+
+    @GetMapping("/inventario/{email}")
+    public String mostrarInventario(@PathVariable String email, Model model) {
+        try {
+            // Obtener los datos del floricultor
+            String urlFloricultor = UriComponentsBuilder.fromHttpUrl(baseUrl + "/floricultores/" + email).toUriString();
+            Floricultor floricultor = restTemplate.getForObject(urlFloricultor, Floricultor.class);
+            model.addAttribute("floricultor", floricultor);
+        } catch (Exception e) {
+            model.addAttribute("floricultor", null);
+        }
+
+        try {
+            // Obtener los productos que pertenecen al floricultor
+            String urlProductos = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos/floricultor/" + email).toUriString();
+            List<Producto> productos = restTemplate.getForObject(urlProductos, List.class);
+            model.addAttribute("productos", productos);
+        } catch (Exception e) {
+            model.addAttribute("productos", new ArrayList<Producto>());
+        }
+
+        model.addAttribute("email", email);
+
+        return "inventario";
+    }
+
+    @GetMapping("/producto/{id}")
+    public String mostrarDetalleProducto(@PathVariable Long id, Model model) {
+        try {
+            String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos/" + id).toUriString();
+            Producto producto = restTemplate.getForObject(url, Producto.class);
+            model.addAttribute("producto", producto);
+        } catch (Exception e) {
+            model.addAttribute("producto", null);
+        }
+        return "detalleProducto";
+    }
+
+    @GetMapping("/productos/nuevo/{email}")
+    public String mostrarFormularioProducto(@PathVariable String email, Model model) {
+        try {
+            String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/floricultores/" + email).toUriString();
+            Floricultor floricultor = restTemplate.getForObject(url, Floricultor.class);
+            model.addAttribute("floricultor", floricultor);
+        } catch (Exception e) {
+            model.addAttribute("floricultor", null);
+        }
+
+        model.addAttribute("producto", new Producto());
+        return "formularioProducto";
+    }
+
+    @PostMapping("/productos/crear/{email}")
+    public String crearProducto(@PathVariable String email, @ModelAttribute Producto producto) {
+        try {
+            String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos").toUriString();
+            restTemplate.postForObject(url, producto, Producto.class);
+        } catch (Exception e) {
+            // Manejar el error si la creación del producto falla
+        }
+
+        return "redirect:/catalogo/catalogoFloricultor/" + email;
+    }
+
+    @GetMapping("/pedidos/nuevo")
+    public String mostrarFormularioPedido(Model model) {
+        try {
+            String urlProductos = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos").toUriString();
+            List<Producto> productos = restTemplate.getForObject(urlProductos, List.class);
+            model.addAttribute("productos", productos);
+        } catch (Exception e) {
+            model.addAttribute("productos", new ArrayList<Producto>());
+        }
+
+        try {
+            String urlFloricultores = UriComponentsBuilder.fromHttpUrl(baseUrl + "/floricultores").toUriString();
+            List<Floricultor> floricultores = restTemplate.getForObject(urlFloricultores, List.class);
+            model.addAttribute("floricultores", floricultores);
+        } catch (Exception e) {
+            model.addAttribute("floricultores", new ArrayList<Floricultor>());
+        }
+
+        model.addAttribute("pedido", new Pedido());
+        model.addAttribute("detallePedido", new DetallePedido());
+
+        return "formularioPedido";
+    }
+
+    @PostMapping("/pedidos/crear")
+    public String crearPedido(@ModelAttribute Pedido pedido, @ModelAttribute DetallePedido detallePedido) {
+        try {
+            String urlPedido = UriComponentsBuilder.fromHttpUrl(baseUrl + "/pedidos").toUriString();
+            Pedido nuevoPedido = restTemplate.postForObject(urlPedido, pedido, Pedido.class);
+
+            // Asociar el detalle al pedido
+            detallePedido.setPedido(nuevoPedido);
+            String urlDetalle = UriComponentsBuilder.fromHttpUrl(baseUrl + "/detallesPedido").toUriString();
+            restTemplate.postForObject(urlDetalle, detallePedido, DetallePedido.class);
+        } catch (Exception e) {
+            // Manejar el error si el pedido o detalle no se pueden crear
+        }
+
+        return "redirect:/catalogo";
+    }
+
+    @GetMapping("/eliminar/{id}")
+    public String eliminarProducto(@PathVariable Long id, @RequestParam String email) {
+        try {
             String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos/" + id).toUriString();
             restTemplate.delete(url);
-    
-            return "redirect:/catalogo"; // Redirigir al catálogo después de eliminar el producto
+        } catch (Exception e) {
+            // Manejar el error si no se puede eliminar el producto
         }
+
+        return "redirect:/catalogo/inventario/" + email;
+    }
 }

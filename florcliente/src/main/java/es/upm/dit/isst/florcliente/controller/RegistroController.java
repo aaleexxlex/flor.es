@@ -18,6 +18,18 @@ public class RegistroController {
         this.restTemplate = new RestTemplate();
     }
 
+    @GetMapping("/logout")
+    public String Logout(Model model) {
+     
+        return "redirect:/catalogo"; // Muestra la vista de registro
+    }
+
+    @GetMapping("/login")
+    public String mostrarFormularioLogin(Model model) {
+     
+        return "login"; // Muestra la vista de registro
+    }
+
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model) {
         model.addAttribute("tipoUsuario", "cliente"); // Valor por defecto

@@ -18,5 +18,10 @@ public class Producto {
     private Floricultor floricultor;
     
     // Getters y Setters
+
+    @Override
+    public String toString() {
+        return "Producto{idProducto=" + idProducto + ", nombre='" + nombre + "', tipoFlor='" + tipoFlor + "', precio=" + precio + ", floricultor=" + floricultor + "}";
+    }
 }
 

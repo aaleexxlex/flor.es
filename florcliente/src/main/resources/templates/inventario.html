@@ -5,8 +5,17 @@
 </head>
 <body>
     <h1>Inventario del Floricultor</h1>
+    
     <ul>
-        <li th:each="producto : ${productos}" th:text="${producto}"></li>
+        <li th:each="producto : ${productos}">
+            <strong th:text="${producto.nombre}"></strong> - 
+            <span th:text="${producto.tipoFlor}"></span>, 
+            Precio: <span th:text="${producto.precio}"></span>, 
+            Floricultor: <span th:text="${producto.floricultor.nombre}"></span>
+            <!-- Enlace de eliminar, pasando el id y el email como parámetros -->
+            <a th:href="@{'/catalogo/eliminar/' + ${producto.idProducto} + '?email=' + ${email}}">Eliminar</a>
+        </li>
     </ul>
+    <a th:href="@{'/catalogo/productos/nuevo/'+ ${email}}">Añadir Nuevo Producto</a>
 </body>
 </html>
