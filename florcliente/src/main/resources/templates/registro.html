@@ -1,34 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Registro de Usuario</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Registro de Usuario</h1>
 
-    <form action="#" th:action="@{/registro}" method="post">
-        <label>Nombre:</label>
-        <input type="text" name="nombre" required />
-        <br>
+    <div class="container-sm">
+        <h1>Registro de Usuario</h1>
 
-        <label>Email:</label>
-        <input type="email" name="email" required />
-        <br>
+        <form action="#" th:action="@{/registro}" method="post" class="form">
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" name="nombre" id="nombre" required />
+            </div>
 
-        <label>Dirección / Ubicación:</label>
-        <input type="text" name="direccion" required />
-        <br>
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input type="email" name="email" id="email" required />
+            </div>
 
-        <label>Tipo de Usuario:</label>
-        <select name="tipoUsuario">
-            <option value="cliente">Cliente</option>
-            <option value="floricultor">Floricultor</option>
-        </select>
-        <br>
+            <div class="form-group">
+                <label for="direccion">Dirección / Ubicación</label>
+                <input type="text" name="direccion" id="direccion" required />
+            </div>
 
-        <button type="submit">Registrarse</button>
-    </form>
+            <div class="form-group">
+                <label for="tipoUsuario">Tipo de Usuario</label>
+                <select name="tipoUsuario" id="tipoUsuario">
+                    <option value="cliente">Cliente</option>
+                    <option value="floricultor">Floricultor</option>
+                </select>
+            </div>
 
-    <a href="/catalogo">Volver al Catálogo</a>
+            <div class="form-group">
+                <button type="submit" class="button">Registrarse</button>
+            </div>
+        </form>
+
+        <div class="button-bar">
+            <a href="/catalogo" class="button secondary">Volver al Catálogo</a>
+        </div>
+    </div>
+
 </body>
 </html>

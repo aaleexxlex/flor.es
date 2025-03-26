@@ -1,42 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Nuevo Pedido</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Realizar un Nuevo Pedido</h1>
 
-    <form action="#" th:action="@{/catalogo/pedidos/crear}" th:object="${detallePedido}" method="post">
-        
-        <!-- Seleccionar Producto -->
-        <label for="producto">Producto</label>
-        <select id="producto" th:field="*{producto.idProducto}" required>
-            <option th:each="producto : ${productos}" 
-                    th:value="${producto['idProducto']}" 
-                    th:text="${producto['nombre']}"></option>
-        </select>
+    <nav class="navbar">
+        <a href="/catalogo">← Volver al catálogo</a>
+    </nav>
 
-        <!-- Seleccionar Floricultor -->
-        <label for="floricultor">Floricultor</label>
-        <select id="floricultor" th:field="*{pedido.floricultor.email}" required>
-            <option th:each="floricultor : ${floricultores}" 
-                    th:value="${floricultor['email']}" 
-                    th:text="${floricultor['nombre']}"></option>
-        </select>
+    <div class="container">
+        <h1>Realizar un Nuevo Pedido</h1>
 
-        <!-- Ingresar Cantidad -->
-        <label for="cantidad">Cantidad</label>
-        <input type="number" id="cantidad" th:field="*{cantidad}" required min="1"/>
+        <form action="#" th:action="@{/catalogo/pedidos/crear}" th:object="${detallePedido}" method="post" class="form">
+            
+            <div class="form-group">
+                <label for="producto">Producto</label>
+                <select id="producto" th:field="*{producto.idProducto}" required>
+                    <option th:each="producto : ${productos}" 
+                            th:value="${producto['idProducto']}" 
+                            th:text="${producto['nombre']}"></option>
+                </select>
+            </div>
 
-        <!-- Dirección de Entrega -->
-        <label for="destino">Dirección de Entrega</label>
-        <input type="text" id="destino" th:field="*{pedido.destino}" required/>
+            <div class="form-group">
+                <label for="floricultor">Floricultor</label>
+                <select id="floricultor" th:field="*{pedido.floricultor.email}" required>
+                    <option th:each="floricultor : ${floricultores}" 
+                            th:value="${floricultor['email']}" 
+                            th:text="${floricultor['nombre']}"></option>
+                </select>
+            </div>
 
-        <!-- Botón para enviar -->
-        <button type="submit">Confirmar Pedido</button>
-    </form>
+            <div class="form-group">
+                <label for="cantidad">Cantidad</label>
+                <input type="number" id="cantidad" th:field="*{cantidad}" required min="1"/>
+            </div>
 
-    <a href="/catalogo">Volver al Catálogo</a>
+            <div class="form-group">
+                <label for="destino">Dirección de Entrega</label>
+                <input type="text" id="destino" th:field="*{pedido.destino}" required/>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="button">Confirmar Pedido</button>
+            </div>
+        </form>
+    </div>
+
 </body>
 </html>
-

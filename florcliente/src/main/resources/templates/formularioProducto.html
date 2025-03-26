@@ -1,30 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Nuevo Producto</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Añadir Nuevo Producto</h1>
 
-    <form action="#" th:action="@{'/catalogo/productos/crear/' + ${floricultor.email} }" th:object="${producto}" method="post">
-        <label for="nombre">Nombre</label>
-        <input type="text" id="nombre" th:field="*{nombre}" required/>
+    <nav class="navbar">
+        <a href="/catalogo">← Volver al catálogo</a>
+    </nav>
 
-        <label for="tipoFlor">Tipo de Flor</label>
-        <input type="text" id="tipoFlor" th:field="*{tipoFlor}" required/>
+    <div class="container">
+        <h1>Añadir Nuevo Producto</h1>
 
-        <label for="precio">Precio</label>
-        <input type="number" id="precio" th:field="*{precio}" step="0.01" required/>
-        
-        <label for="floricultor">Floricultor</label>
-        <select id="floricultor" th:field="*{floricultor.email}" required>
-            <option th:value="${floricultor.email}" th:text="${floricultor.nombre}"></option>
-        </select>
-        
+        <form action="#" th:action="@{'/catalogo/productos/crear/' + ${floricultor.email}}" th:object="${producto}" method="post" class="form">
 
-        <button type="submit">Crear Producto</button>
-    </form>
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" th:field="*{nombre}" required/>
+            </div>
 
-    <a href="/catalogo">Volver al Catálogo</a>
+            <div class="form-group">
+                <label for="tipoFlor">Tipo de Flor</label>
+                <input type="text" id="tipoFlor" th:field="*{tipoFlor}" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="precio">Precio</label>
+                <input type="number" id="precio" th:field="*{precio}" step="0.01" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="floricultor">Floricultor</label>
+                <select id="floricultor" th:field="*{floricultor.email}" required>
+                    <option th:value="${floricultor.email}" th:text="${floricultor.nombre}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="button">Crear Producto</button>
+            </div>
+
+        </form>
+    </div>
+
 </body>
 </html>

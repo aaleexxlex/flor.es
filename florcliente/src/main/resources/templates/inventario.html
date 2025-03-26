@@ -1,21 +1,33 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Inventario del Floricultor</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Inventario del Floricultor</h1>
-    
-    <ul>
-        <li th:each="producto : ${productos}">
-            <strong th:text="${producto.nombre}"></strong> - 
-            <span th:text="${producto.tipoFlor}"></span>, 
-            Precio: <span th:text="${producto.precio}"></span>, 
-            Floricultor: <span th:text="${producto.floricultor.nombre}"></span>
-            <!-- Enlace de eliminar, pasando el id y el email como parámetros -->
-            <a th:href="@{'/catalogo/eliminar/' + ${producto.idProducto} + '?email=' + ${email}}">Eliminar</a>
-        </li>
-    </ul>
-    <a th:href="@{'/catalogo/productos/nuevo/'+ ${email}}">Añadir Nuevo Producto</a>
+
+    <nav class="navbar">
+        <a th:href="@{'/catalogo/productos/nuevo/'+ ${email}}" class="button">+ Añadir nuevo producto</a>
+    </nav>
+
+    <div class="container">
+        <h1>Inventario del Floricultor</h1>
+
+        <ul class="inventory-list">
+            <li th:each="producto : ${productos}">
+                <div class="inventory-item">
+                    <span>
+                        <strong th:text="${producto.nombre}">Nombre</strong> –
+                        <span th:text="${producto.tipoFlor}">Tipo</span>,
+                        Precio: <span th:text="${producto.precio}">0.0</span>,
+                        Floricultor: <span th:text="${producto.floricultor.nombre}">Floricultor</span>
+                    </span>
+                    <a th:href="@{'/catalogo/eliminar/' + ${producto.idProducto} + '?email=' + ${email}}" class="delete-button">Eliminar</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+
 </body>
 </html>

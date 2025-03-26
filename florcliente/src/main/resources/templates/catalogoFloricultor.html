@@ -1,41 +1,47 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Catálogo de Productos</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    
-    <a href="/logout">Log out</a>
 
-    <h1>Catálogo de Productos</h1>
+    <nav class="navbar">
+        <span class="navbar-title">Flor.es</span>
+        <a href="/logout">Log out</a>
+    </nav>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Tipo de Flor</th>
-                <th>Precio</th>
-                <th>Floricultor</th>
-                <th>Opciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="producto : ${productos}">
-                <td th:text="${producto.nombre}"></td>
-                <td th:text="${producto.tipoFlor}"></td>
-                <td th:text="${producto.precio}"></td>
-                <td th:text="${producto.floricultor.nombre}"></td>
-                <td>
-                    <!-- Coloca el enlace de eliminar dentro de la celda -->
-                    
-                    <td><a th:href="@{/catalogo/producto/{id}(id=${producto.idProducto})}" >Ver</a></td>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="container">
+        <h1>Catálogo de Productos</h1>
 
-    
-    <a th:href="@{/catalogo/inventario/{email}(email=${floricultor.email})}">Ver inventario</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Tipo de Flor</th>
+                    <th>Precio</th>
+                    <th>Floricultor</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="producto : ${productos}">
+                    <td th:text="${producto.nombre}">Nombre</td>
+                    <td th:text="${producto.tipoFlor}">Tipo</td>
+                    <td th:text="${producto.precio}">0.0</td>
+                    <td th:text="${producto.floricultor.nombre}">Floricultor</td>
+                    <td>
+                        <a th:href="@{/catalogo/producto/{id}(id=${producto.idProducto})}">Ver</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="button-bar">
+            <a th:href="@{/catalogo/inventario/{email}(email=${floricultor.email})}" class="button">Ver inventario</a>
+        </div>
+    </div>
 
 </body>
 </html>
