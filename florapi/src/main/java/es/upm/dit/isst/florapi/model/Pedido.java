@@ -5,18 +5,26 @@ import java.util.Date;
 import java.util.List;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @Entity
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class Pedido {
+    @EqualsAndHashCode.Include
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPedido;
+
+    @ToString.Include
     private Date fecha;
+
+    @ToString.Include
     private String estado;
-    private double total;
     private String destino;
     
     @ManyToOne
@@ -31,8 +39,15 @@ public class Pedido {
     private Valoracion valoracion;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<DetallePedido> detallesPedido;
+    @JsonIgnoreProperties("pedido")
+    private List<LineaPedido> lineasPedido;
     
     // Getters y Setters
+    public double getTotal() {
+        if (lineasPedido == null) return 0;
+
+        return lineasPedido.stream()
+                .mapToDouble(det -> det.getCantidad() * det.getPrecioUnitario())
+                .sum();
+    }
 }

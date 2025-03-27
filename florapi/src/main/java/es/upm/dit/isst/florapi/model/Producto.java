@@ -22,7 +22,7 @@ public class Producto {
     
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<DetallePedido> detallesPedido;
+    private List<LineaPedido> lineasPedido;
     // Getters y Setters
 }
 

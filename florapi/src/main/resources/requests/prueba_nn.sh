@@ -44,47 +44,40 @@ echo "➡ Creando pedidos..."
 curl -X POST "$BASE_URL/pedidos" -H "Content-Type: application/json" -d '{
   "cliente": {"email": "juan@example.com"},
   "floricultor": {"email": "luis@example.com"},
-  "fecha": "2025-03-22",
-  "estado": "Pendiente",
-  "total": 25.5,
-  "destino": "Calle 789"
+  "fecha": "2025-03-22T00:00:00",
+  "estado": "pendiente",
+  "destino": "Calle 789",
+  "lineasPedido": [
+    {
+      "producto": {"idProducto": 1},
+      "cantidad": 1,
+      "precioUnitario": 10.5
+    },
+    {
+      "producto": {"idProducto": 2},
+      "cantidad": 1,
+      "precioUnitario": 15.0
+    }
+  ]
 }'
 
-# Pedido de Ana (solo Tulipan Amarillo)
+# Pedido de Ana (Tulipan Amarillo)
 curl -X POST "$BASE_URL/pedidos" -H "Content-Type: application/json" -d '{
   "cliente": {"email": "ana@example.com"},
   "floricultor": {"email": "marta@example.com"},
-  "fecha": "2025-03-23",
-  "estado": "Pendiente",
-  "total": 12.0,
-  "destino": "Calle 456"
+  "fecha": "2025-03-23T00:00:00",
+  "estado": "pendiente",
+  "destino": "Calle 456",
+  "lineasPedido": [
+    {
+      "producto": {"idProducto": 3},
+      "cantidad": 1,
+      "precioUnitario": 12.0
+    }
+  ]
 }'
 
-# Relacionar productos con pedidos a través de DetallePedido (suponiendo que el pedido tiene idPedido 1 y 2)
-echo "➡ Relacionando productos con pedidos..."
 
-# Relacionar Rosa Roja (Producto 1) y Lirio Blanco (Producto 2) con Pedido 1
-curl -X POST "$BASE_URL/detallesPedido" -H "Content-Type: application/json" -d '{
-  "cantidad": 1,
-  "subtotal": 10.5,
-  "pedido": {"idPedido": 1},
-  "producto": {"idProducto": 1}
-}'
-
-curl -X POST "$BASE_URL/detallesPedido" -H "Content-Type: application/json" -d '{
-  "cantidad": 1,
-  "subtotal": 15.0,
-  "pedido": {"idPedido": 1},
-  "producto": {"idProducto": 2}
-}'
-
-# Relacionar Tulipan Amarillo (Producto 3) con Pedido 2
-curl -X POST "$BASE_URL/detallesPedido" -H "Content-Type: application/json" -d '{
-  "cantidad": 1,
-  "subtotal": 12.0,
-  "pedido": {"idPedido": 2},
-  "producto": {"idProducto": 3}
-}'
 
 echo "✅ Base de datos poblada con éxito."
 
