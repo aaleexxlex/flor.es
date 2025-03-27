@@ -5,4 +5,6 @@ import es.upm.dit.isst.florapi.model.*;
 
 
 
-public interface DetallePedidoRepository extends JpaRepository<DetallePedido, Long> {}
+public interface LineaPedidoRepository extends JpaRepository<LineaPedido, Long> {
+    List<LineaPedido> findByPedidoId(Long idPedido);
+}

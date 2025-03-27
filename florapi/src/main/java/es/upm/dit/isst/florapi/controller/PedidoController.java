@@ -33,17 +33,31 @@ public class PedidoController {
 
     // Create a new pedido
     @PostMapping
-    public Pedido createPedido(@RequestBody Pedido pedido) {
-        return pedidoRepository.save(pedido);
+    public ResponseEntity<Pedido> createPedido(@RequestBody Pedido pedido) {
+        if (pedido.getCliente() == null) {
+            return ResponseEntity.badRequest().body("El campo 'cliente' es obligatorio.");
+        }
+        if (pedido.getEstado() == null) {
+            return ResponseEntity.badRequest().body("El campo 'estado' es obligatorio.");
+        }
+        if (pedido.getLineasPedido() == null || pedido.getLineasPedido().isEmpty()) {
+            return ResponseEntity.badRequest().body("El pedido debe contener al menos una línea.");
+        }
+        return ResponseEntity.ok(pedidoRepository.save(pedido));
     }
 
     // Update an existing pedido
     @PutMapping("/{id}")
     public ResponseEntity<Pedido> updatePedido(@PathVariable Long id, @RequestBody Pedido pedidoDetails) {
+        if (pedidoDetails.getCliente() == null) {
+            return ResponseEntity.badRequest().body("El campo 'cliente' es obligatorio.");
+        }
+        if (pedidoDetails.getEstado() == null) {
+            return ResponseEntity.badRequest().body("El campo 'estado' es obligatorio.");
+        }
         return pedidoRepository.findById(id).map(pedido -> {
             pedido.setFecha(pedidoDetails.getFecha());
             pedido.setEstado(pedidoDetails.getEstado());
-            pedido.setTotal(pedidoDetails.getTotal());
             pedido.setDestino(pedidoDetails.getDestino());
             pedido.setCliente(pedidoDetails.getCliente());
             pedido.setFloricultor(pedidoDetails.getFloricultor());
@@ -51,6 +65,7 @@ public class PedidoController {
             return ResponseEntity.ok(pedidoRepository.save(pedido));
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
+    
 
     // Delete a pedido
     @DeleteMapping("/{id}")
