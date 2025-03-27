@@ -1,4 +1,4 @@
-import es.upm.dit.isst.florcliente.model.*;
+package es.upm.dit.isst.florcliente.model;
 
 import lombok.*;
 

@@ -1,0 +1,62 @@
+<!-- templates/fragments/navbar.html -->
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <header th:fragment="navbar">
+    <!-- Top Info Bar -->
+    <div class="bg-white border-bottom py-2">
+      <div class="container-fluid d-flex justify-content-between align-items-center px-4">
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <img src="/images/logo.png" alt="Flor.es Logo" style="height: 80px;" class="me-2">
+          <span class="fs-4 fw-bold text-pink">flor.es</span>
+        </a>
+
+        <!-- Info derecha -->
+        <div class="d-flex align-items-center gap-4">
+          <div class="text-end">
+            <small class="d-block text-muted">24/7 SOPORTE</small>
+            <strong>(+965) 7492-4277</strong>
+          </div>
+          <div class="vr"></div>
+          <div class="text-end">
+            <small class="d-block text-muted">MI CUENTA</small>
+            <a href="/login" class="text-dark text-decoration-none">Sign In</a>
+          </div>
+          <div class="text-end">
+            <small class="d-block text-muted">CARRITO</small>
+            <a href="/carrito" class="text-dark text-decoration-none">
+              <i class="bi bi-cart"></i> 150.00 €
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menú principal -->
+    <nav class="bg-white border-bottom">
+      <div class="container-fluid px-4">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link text-pink fw-bold" href="#">Populares</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="#">Flores</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="#">Ramos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="#">Arreglos florales</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="#">Bodas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="#">Regalos</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+</body>
+</html>

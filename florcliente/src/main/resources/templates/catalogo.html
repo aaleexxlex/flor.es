@@ -1,19 +1,9 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Catálogo de Productos</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
+    <th:block th:replace="fragments/head :: head"></th:block>
 <body>
 
-    <nav class="navbar">
-        <span class="navbar-title">Flor.es</span>
-        <div>
-            <a href="/registro">Registrarse</a>
-            <a href="/login">Iniciar sesión</a>
-        </div>
-    </nav>
+    <div th:replace="fragments/navbar :: navbar"></div>
 
     <div class="container">
         <h1>Descubre nuestros ramos</h1>
@@ -41,6 +31,6 @@
             </tbody>
         </table>
     </div>
-
+    <div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
