@@ -45,7 +45,6 @@ public class FloricultorController {
     @PutMapping("/{email}")
     public ResponseEntity<Floricultor> updateFloricultor(@RequestBody Floricultor newFloricultor, @PathVariable String email) {
         return floricultorRepository.findById(email).map(floricultor -> {
-            floricultor.setEmail(newFloricultor.getEmail());
             floricultor.setNombre(newFloricultor.getNombre());
             floricultor.setUbicacion(newFloricultor.getUbicacion());
             floricultor.setDisponibilidad(newFloricultor.isDisponibilidad());
@@ -73,6 +72,9 @@ public class FloricultorController {
     // Eliminar un floricultor por email (ID como String)
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteFloricultor(@PathVariable String email) {
+        if (!floricultorRepository.existsById(email)) {
+            return ResponseEntity.notFound().build();
+        }
         floricultorRepository.deleteById(email);
         return ResponseEntity.noContent().build();
     }

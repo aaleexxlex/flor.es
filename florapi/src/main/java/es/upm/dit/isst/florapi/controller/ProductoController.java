@@ -3,8 +3,7 @@ package es.upm.dit.isst.florapi.controller;
 import es.upm.dit.isst.florapi.model.Producto;
 import es.upm.dit.isst.florapi.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,21 +22,22 @@ public class ProductoController {
         return productoRepository.findAll();
     }
 
-    // Obtener un producto por su ID
+    // Obtener un producto por ID
     @GetMapping("/{idProducto}")
     public ResponseEntity<Producto> getProductoById(@PathVariable Long idProducto) {
-        Optional<Producto> producto = productoRepository.findById(idProducto);
-        return producto.map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return productoRepository.findById(idProducto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // Obtener productos por email del floricultor
     @GetMapping("/floricultor/{email}")
     public ResponseEntity<List<Producto>> getProductosByFloricultorEmail(@PathVariable String email) {
-    List<Producto> productos = productoRepository.findByFloricultorEmail(email);
-    if (productos.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    return ResponseEntity.ok(productos);
+        List<Producto> productos = productoRepository.findByFloricultorEmail(email);
+        if (productos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(productos);
     }
 
     // Crear un nuevo producto
@@ -47,20 +47,21 @@ public class ProductoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProducto);
     }
 
-    // Actualizar un producto por su ID
+    // Actualizar completamente un producto
     @PutMapping("/{idProducto}")
     public ResponseEntity<Producto> updateProducto(@PathVariable Long idProducto, @RequestBody Producto updatedProducto) {
         return productoRepository.findById(idProducto).map(producto -> {
             producto.setNombre(updatedProducto.getNombre());
             producto.setTipoFlor(updatedProducto.getTipoFlor());
             producto.setPrecio(updatedProducto.getPrecio());
+            producto.setImagen(updatedProducto.getImagen()); // ¡AQUÍ!
             producto.setFloricultor(updatedProducto.getFloricultor());
             productoRepository.save(producto);
-            return ResponseEntity.ok().body(producto);
-        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            return ResponseEntity.ok(producto);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Actualizar parcialmente un producto
+    // Actualización parcial
     @PatchMapping("/{idProducto}")
     public ResponseEntity<Producto> partialUpdateProducto(@PathVariable Long idProducto, @RequestBody Producto partialProducto) {
         return productoRepository.findById(idProducto).map(producto -> {
@@ -70,25 +71,28 @@ public class ProductoController {
             if (partialProducto.getTipoFlor() != null) {
                 producto.setTipoFlor(partialProducto.getTipoFlor());
             }
-            if (partialProducto.getPrecio() != 0) {
+            if (partialProducto.getPrecio() > 0) {
                 producto.setPrecio(partialProducto.getPrecio());
+            }
+            if (partialProducto.getImagen() != null) {
+                producto.setImagen(partialProducto.getImagen());
             }
             if (partialProducto.getFloricultor() != null) {
                 producto.setFloricultor(partialProducto.getFloricultor());
             }
             productoRepository.save(producto);
-            return ResponseEntity.ok().body(producto);
-        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            return ResponseEntity.ok(producto);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Eliminar un producto por su ID
+    // Eliminar producto
     @DeleteMapping("/{idProducto}")
     public ResponseEntity<Void> deleteProducto(@PathVariable Long idProducto) {
         if (productoRepository.existsById(idProducto)) {
             productoRepository.deleteById(idProducto);
             return ResponseEntity.ok().build();
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
     }
 }

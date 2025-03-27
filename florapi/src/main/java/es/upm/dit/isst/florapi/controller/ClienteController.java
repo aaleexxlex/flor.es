@@ -68,6 +68,9 @@ public class ClienteController {
     // Eliminar un cliente (por email)
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteCliente(@PathVariable String email) {
+        if (!clienteRepository.existsById(email)) {
+            return ResponseEntity.notFound().build();
+        }
         clienteRepository.deleteById(email);
         return ResponseEntity.noContent().build();
     }
