@@ -10,7 +10,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "pedidos")
 public class Cliente {
+    
+    @EqualsAndHashCode.Include
     @Id 
     private String email;  // email como identificador único
     private String nombre;

@@ -2,23 +2,31 @@ package es.upm.dit.isst.florapi.model;
 
 import jakarta.persistence.*;
 import java.util.Date;
-import java.util.List;
 import lombok.*;
+
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "pedido")
 public class Valoracion {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long idValoracion;
-    private String tipoValoracion;
-    private int calificacion;
+
+    private int calificacionPedido;
+    private int calificacionLogistica;
+
     private String comentario;
+
+    @Temporal(TemporalType.DATE)
     private Date fecha;
-    
+
     @OneToOne
-    @JoinColumn(name = "id_pedido")
+    @JoinColumn(name = "id_pedido", nullable = false, unique = true)
     private Pedido pedido;
-    
-    // Getters y Setters
 }

@@ -1,17 +1,23 @@
 package es.upm.dit.isst.florapi.model;
 
 import jakarta.persistence.*;
-import java.util.Date;
 import java.util.List;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"pedidos", "productos"})
 public class Floricultor {
+
+    @EqualsAndHashCode.Include
     @Id 
-    private String email;  // email como identificador único
+    private String email;
+
     private String nombre;
     private String ubicacion;
     private boolean disponibilidad;
@@ -23,6 +29,4 @@ public class Floricultor {
     @OneToMany(mappedBy = "floricultor")
     @JsonIgnore 
     private List<Producto> productos;
-    
-    // Getters y Setters
 }
