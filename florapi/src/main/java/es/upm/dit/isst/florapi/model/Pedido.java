@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @Entity
 @Getter @Setter
@@ -37,7 +39,7 @@ public class Pedido {
     private Valoracion valoracion;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonIgnoreProperties("pedido")
     private List<LineaPedido> lineasPedido;
     
     // Getters y Setters

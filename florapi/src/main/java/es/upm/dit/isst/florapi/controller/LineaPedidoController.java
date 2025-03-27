@@ -57,15 +57,24 @@ public class LineaPedidoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         if (!lineaPedidoRepository.existsById(id)) {
-            return ResponseEntity.notFound().body("No se encontró la línea con ID " + id);
+            return ResponseEntity.badRequest().body("No se encontró la línea con ID " + id);
         }
         lineaPedidoRepository.deleteById(id);
-        return ResponseEntity.ok("Línea de pedido eliminada correctamente.");
+        return ResponseEntity.badRequest().body("No se encontró la línea con ID " + id);
     }
 
     //Ver lineas de pedido según el id
     @GetMapping("/pedido/{idPedido}")
     public List<LineaPedido> obtenerPorPedido(@PathVariable Long idPedido) {
-        return lineaPedidoRepository.findByPedidoId(idPedido);
+        return lineaPedidoRepository.findByPedido_IdPedido(idPedido);
     }
+    @GetMapping("/vista/pedido/{idPedido}")
+    public String mostrarLineasPedido(@PathVariable Long idPedido, Model model) {
+        List<LineaPedido> lineas = lineaPedidoRepository.findByPedido_IdPedido(idPedido);
+        model.addAttribute("lineas", lineas);
+        model.addAttribute("idPedido", idPedido);
+        return "lineasPedidoVista";
+    }
+    
 }
+

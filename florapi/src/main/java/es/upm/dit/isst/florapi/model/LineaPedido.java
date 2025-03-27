@@ -25,6 +25,7 @@ public class LineaPedido {
     
     @ManyToOne
     @JoinColumn(name = "id_pedido")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("lineasPedido")
     private Pedido pedido;
     
     @ManyToOne
