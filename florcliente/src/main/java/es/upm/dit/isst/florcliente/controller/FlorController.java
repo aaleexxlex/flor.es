@@ -71,7 +71,7 @@ public class FlorController {
         return "home";
     }
 
-    @GetMapping("/cuenta")
+  @GetMapping("/cuenta")
 public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAttribute("usuario") Object usuario) {
     if ("cliente".equals(rol)) {
         List<Pedido> pedidos = new ArrayList<>();
@@ -89,9 +89,12 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
         model.addAttribute("pedidos", pedidos);
     } else if ("floricultor".equals(rol)) {
         List<Producto> productos = new ArrayList<>();
+        List<Pedido> pedidosRecibidos = new ArrayList<>();
+        String email = ((Floricultor) usuario).getEmail();
+
         try {
             ResponseEntity<List<Producto>> response = restTemplate.exchange(
-                baseUrl + "/productos/floricultor/" + ((Floricultor) usuario).getEmail(),
+                baseUrl + "/productos/floricultor/" + email,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Producto>>() {}
@@ -100,10 +103,26 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        try {
+            ResponseEntity<List<Pedido>> response = restTemplate.exchange(
+                baseUrl + "/pedidos/floricultor/" + email,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Pedido>>() {}
+            );
+            pedidosRecibidos = response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         model.addAttribute("productos", productos);
+        model.addAttribute("pedidosRecibidos", pedidosRecibidos);
     }
+
     return "cuenta";
 }
+
     @GetMapping("/tienda")
     public String mostrarTienda(Model model) {
     try {
