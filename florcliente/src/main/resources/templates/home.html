@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+
+<!-- NAVBAR -->
+<header th:replace="fragments/navbar :: navbar"></header>
+
+<!-- HERO SECTION -->
+<section class="position-relative text-white" style="background-image: url('/images/fondo-flores.jpg'); background-size: cover; background-position: center; height: 800px;">
+  
+    <!-- Capa oscura encima de la imagen -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); z-index: 1;"></div>
+    
+    <!-- Contenido encima del overlay -->
+    <div class="d-flex flex-column justify-content-center align-items-start h-100 px-5 ms-5" style="max-width: 50%; position: relative; z-index: 2;">
+      <h1 class="display-4 fw-bold lh-sm">
+        Entrega de flores en el mismo día para sorprender en cualquier ocasión especial
+      </h1>
+      <p class="lead mt-3">Entrega rápida y personalizada en tu ciudad</p>
+      <a href="/tienda" class="btn btn-primary mt-4 px-5 py-2" style="background-color: #D72684; border: none;">Comprar ahora</a>
+    </div>
+  </section>
+  
+
+  <section class="container-fluid py-5 px-5">
+    <h2 class="mb-4 ms-5">Flores</h2>
+    
+    <div class="d-flex flex-wrap justify-content-center gap-5 mt-5">
+  
+      <!-- Más vendidas -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle d-flex align-items-center justify-content-center"
+             style="width: 140px; height: 140px; background-color: #D72684;">
+          <span class="text-white fw-semibold">Más vendidas</span>
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold text-decoration-underline">Más vendidas</small>
+      </a>
+  
+      <!-- Rosas -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/rosas.jpg" alt="Rosas" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Rosas</small>
+      </a>
+  
+      <!-- Tulipanes -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/tulipanes.jpg" alt="Tulipanes" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Tulipanes</small>
+      </a>
+  
+      <!-- Margaritas -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/margaritas.jpg" alt="Margaritas" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Margaritas</small>
+      </a>
+  
+      <!-- Girasoles -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/girasoles.jpeg" alt="Girasoles" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Girasoles</small>
+      </a>
+  
+      <!-- Lirios -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/lirios.jpg" alt="Lirios" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Lirios</small>
+      </a>
+  
+      <!-- Peonías -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/peonias.jpg" alt="Peonías" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Peonías</small>
+      </a>
+  
+      <!-- Otras -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/floresvarias.webp" alt="Otras" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Otras</small>
+      </a>
+  
+    </div>
+  </section>
+  
+  <section class="container-fluid py-5 px-5 ms-5">
+    <h3 class="mb-4">Todas las flores cerca de mí</h3>
+    
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+      <div class="col" th:each="producto : ${productos}">
+        <div class="card h-100 border-0 shadow-sm">
+          
+          <!-- Imagen del producto (debes añadir la propiedad imagen al producto si no está) -->
+          <a th:href="@{/catalogo/producto/{id}(id=${producto.idProducto})}">
+            <img th:src="@{'/images/' + ${producto.tipoFlor?.toLowerCase()} + '.jpg'}" 
+                 class="card-img-top rounded" 
+                 th:alt="${producto.nombre}" />
+          </a>
+  
+          <div class="card-body px-2">
+            <h6 class="card-title mb-0 text-primary" th:text="${producto.nombre}">Nombre</h6>
+            <p class="mb-1 small text-muted" th:text="${producto.floricultor.nombre}">Floricultor</p>
+  
+            <!-- Valoración (si no está implementada aún, puedes quitar esto o poner estrellas fijas) -->
+            <div class="mb-1">
+              <small>
+                ★★★★☆ <span class="text-muted">(8)</span>
+              </small>
+            </div>
+  
+            <!-- Precio -->
+            <p class="fw-semibold mb-0">Desde: <span th:text="${producto.precio} + '€'">0€</span></p>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+    <!-- Botón ver todas -->
+    <div class="text-center mt-4">
+      <a href="/tienda" class="btn px-4 py-2" style="background-color: #D72684; color: white;">VER TODAS</a>
+    </div>
+  </section>
+  <section style="background-color: #f2f2f5;" class="py-5">
+    <div class="container-fluid px-5 ms-5">
+      <h2 class="fw-semibold mb-4">Flor.es #1 Marketplace de flores de España</h2>
+      <p class="mb-3">
+        <strong>Flor.es</strong> es el marketplace de flores más grande de España, conectando a floricultores locales con clientes que buscan calidad, frescura y entrega rápida.
+        Nos especializamos en ofrecer una experiencia de compra sencilla y personalizada, permitiéndote elegir entre una amplia variedad de ramos diseñados para cada ocasión, 
+        desde celebraciones especiales hasta muestras de cariño espontáneas.
+      </p>
+      <p>
+        Apostamos por la producción local y sostenible, garantizando flores recién cortadas que mantienen su belleza y aroma por más tiempo. Además, nuestra red de floricultores y socios logísticos 
+        nos permite ofrecer entregas el mismo día en numerosas ciudades, asegurando que tu regalo llegue justo a tiempo para sorprender. Descubre una nueva forma de regalar flores con la confianza 
+        de una plataforma diseñada para ofrecer calidad, rapidez y la mejor experiencia de compra.
+      </p>
+    </div>
+  </section>
+
+<!-- FOOTER -->
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>
