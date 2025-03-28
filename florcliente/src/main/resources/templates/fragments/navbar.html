@@ -20,9 +20,17 @@
           <div class="vr"></div>
           <div class="text-end">
             <small class="d-block text-muted">MI CUENTA</small>
-            <a href="/login" class="text-dark text-decoration-none">
-                <i class="bi bi-person fs-4"></i>
-                Sign In
+          
+            <!-- Si el usuario está logueado -->
+            <a th:if="${usuario != null}" href="/cuenta" class="text-dark text-decoration-none">
+              <i class="bi bi-person fs-4"></i>
+              <span th:text="${usuario.nombre}">Cuenta</span>
+            </a>
+          
+            <!-- Si NO está logueado -->
+            <a th:if="${usuario == null}" href="/login" class="text-dark text-decoration-none">
+              <i class="bi bi-person fs-4"></i>
+              Log in
             </a>
           </div>
           <div class="text-end">

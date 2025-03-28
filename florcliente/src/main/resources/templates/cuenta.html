@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+
+<!-- NAVBAR -->
+<header th:replace="fragments/navbar :: navbar"></header>
+<h1>Mi cuenta</h1>
+
+<div th:if="${rol} == 'cliente'">
+  <h3>Pedidos realizados</h3>
+  <!-- Lista de pedidos del cliente -->
+</div>
+
+<div th:if="${rol} == 'floricultor'">
+  <h3>Inventario de productos</h3>
+  <a href="/catalogo/productos/nuevo" class="btn btn-sm btn-primary">Añadir producto</a>
+  <!-- Lista de productos creados -->
+</div>
