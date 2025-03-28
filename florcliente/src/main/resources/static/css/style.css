@@ -23,7 +23,12 @@
     font-weight: bold;
     font-size: 1.2rem;
 }
+.sin-margen-menu{
+    margin-top: -20px;
+    margin-bottom: -20px;
+    border-bottom: px solid #000000;
 
+}
 /* Contenedor principal para las vistas */
 .container {
     max-width: 1000px;

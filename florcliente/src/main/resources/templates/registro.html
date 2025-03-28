@@ -1,48 +1,38 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Registro de Usuario</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
+<head th:replace="fragments/head :: head"></head>
+<body class="d-flex flex-column min-vh-100">
 
-    <div class="container-sm">
-        <h1>Registro de Usuario</h1>
+<!-- NAVBAR -->
+<header th:replace="fragments/navbar :: navbar"></header>
 
-        <form action="#" th:action="@{/registro}" method="post" class="form">
-            <div class="form-group">
-                <label for="nombre">Nombre</label>
-                <input type="text" name="nombre" id="nombre" required />
-            </div>
+<!-- REGISTRO -->
+<main class="flex-grow-1 bg-cover d-flex justify-content-center align-items-center" 
+      style="background-image: url('/images/fondo-flores.jpg'); background-size: cover; background-position: center;">
 
-            <div class="form-group">
-                <label for="email">Correo electrónico</label>
-                <input type="email" name="email" id="email" required />
-            </div>
+    <div class="card text-center shadow-lg p-4" style="width: 450px; background-color: rgba(255, 255, 255, 0.95);">
+        <img src="/images/logo-solo.png" alt="Logo" class="mx-auto" style="height: 100px;">
+        <h5 class="my-3">Registro de Usuario</h5>
 
-            <div class="form-group">
-                <label for="direccion">Dirección / Ubicación</label>
-                <input type="text" name="direccion" id="direccion" required />
-            </div>
+        <form th:action="@{/registro}" method="post">
+            <input type="text" name="nombre" class="form-control mb-3" placeholder="Nombre" required>
+            <input type="email" name="email" class="form-control mb-3" placeholder="Correo electrónico" required>
+            <input type="text" name="direccion" class="form-control mb-3" placeholder="Dirección / Ubicación" required>
 
-            <div class="form-group">
-                <label for="tipoUsuario">Tipo de Usuario</label>
-                <select name="tipoUsuario" id="tipoUsuario">
-                    <option value="cliente">Cliente</option>
-                    <option value="floricultor">Floricultor</option>
-                </select>
-            </div>
+            <select name="tipoUsuario" class="form-select mb-3">
+                <option value="cliente">Cliente</option>
+                <option value="floricultor">Floricultor</option>
+            </select>
 
-            <div class="form-group">
-                <button type="submit" class="button">Registrarse</button>
-            </div>
+            <button type="submit" class="btn w-100" style="background-color: #D72684; color: white;">Registrarse</button>
         </form>
 
-        <div class="button-bar">
-            <a href="/catalogo" class="button secondary">Volver al Catálogo</a>
-        </div>
+        <a href="/catalogo" class="btn btn-light mt-3">Volver al Catálogo</a>
     </div>
+</main>
+
+<!-- FOOTER -->
+<footer th:replace="fragments/footer :: footer"></footer>
 
 </body>
 </html>

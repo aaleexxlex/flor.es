@@ -1,36 +1,150 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <th:block th:replace="fragments/head :: head"></th:block>
+<head th:replace="fragments/head :: head"></head>
 <body>
 
-    <div th:replace="fragments/navbar :: navbar"></div>
+<!-- NAVBAR -->
+<header th:replace="fragments/navbar :: navbar"></header>
 
-    <div class="container">
-        <h1>Descubre nuestros ramos</h1>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Tipo de Flor</th>
-                    <th>Precio</th>
-                    <th>Floricultor</th>
-                    <th>Opciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="producto : ${productos}">
-                    <td th:text="${producto.nombre}">Nombre</td>
-                    <td th:text="${producto.tipoFlor}">Tipo</td>
-                    <td th:text="${producto.precio}">0.0</td>
-                    <td th:text="${producto.floricultor.nombre}">Floricultor</td>
-                    <td>
-                        <a th:href="@{/catalogo/producto/{id}(id=${producto.idProducto})}">Ver</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+<!-- HERO SECTION -->
+<section class="position-relative text-white" style="background-image: url('/images/fondo-flores.jpg'); background-size: cover; background-position: center; height: 800px;">
+  
+    <!-- Capa oscura encima de la imagen -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); z-index: 1;"></div>
+    
+    <!-- Contenido encima del overlay -->
+    <div class="d-flex flex-column justify-content-center align-items-start h-100 px-5 ms-5" style="max-width: 50%; position: relative; z-index: 2;">
+      <h1 class="display-4 fw-bold lh-sm">
+        Entrega de flores en el mismo día para sorprender en cualquier ocasión especial
+      </h1>
+      <p class="lead mt-3">Entrega rápida y personalizada en tu ciudad</p>
+      <a href="/tienda" class="btn btn-primary mt-4 px-5 py-2" style="background-color: #D72684; border: none;">Comprar ahora</a>
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
+  </section>
+  
+
+  <section class="container-fluid py-5 px-5">
+    <h2 class="mb-4 ms-5">Flores</h2>
+    
+    <div class="d-flex flex-wrap justify-content-center gap-5 mt-5">
+  
+      <!-- Más vendidas -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle d-flex align-items-center justify-content-center"
+             style="width: 140px; height: 140px; background-color: #D72684;">
+          <span class="text-white fw-semibold">Más vendidas</span>
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold text-decoration-underline">Más vendidas</small>
+      </a>
+  
+      <!-- Rosas -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/rosas.jpg" alt="Rosas" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Rosas</small>
+      </a>
+  
+      <!-- Tulipanes -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/tulipanes.jpg" alt="Tulipanes" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Tulipanes</small>
+      </a>
+  
+      <!-- Margaritas -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/margaritas.jpg" alt="Margaritas" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Margaritas</small>
+      </a>
+  
+      <!-- Girasoles -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/girasoles.jpeg" alt="Girasoles" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Girasoles</small>
+      </a>
+  
+      <!-- Lirios -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/lirios.jpg" alt="Lirios" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Lirios</small>
+      </a>
+  
+      <!-- Peonías -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/peonias.jpg" alt="Peonías" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Peonías</small>
+      </a>
+  
+      <!-- Otras -->
+      <a href="#" class="text-center text-decoration-none">
+        <div class="rounded-circle overflow-hidden"
+             style="width: 140px; height: 140px;">
+          <img src="/images/floresvarias.webp" alt="Otras" class="img-fluid w-100 h-100 object-fit-cover">
+        </div>
+        <small class="d-block mt-2 text-dark fw-semibold">Otras</small>
+      </a>
+  
+    </div>
+  </section>
+  
+  <section class="container-fluid py-5 px-5 ms-5">
+    <h3 class="mb-4">Todas las flores cerca de mí</h3>
+    
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+      <div class="col" th:each="producto : ${productos}">
+        <div class="card h-100 border-0 shadow-sm">
+          
+          <!-- Imagen del producto (debes añadir la propiedad imagen al producto si no está) -->
+          <a th:href="@{/catalogo/producto/{id}(id=${producto.idProducto})}">
+            <img th:src="@{'/images/' + ${producto.tipoFlor?.toLowerCase()} + '.jpg'}" 
+                 class="card-img-top rounded" 
+                 th:alt="${producto.nombre}" />
+          </a>
+  
+          <div class="card-body px-2">
+            <h6 class="card-title mb-0 text-primary" th:text="${producto.nombre}">Nombre</h6>
+            <p class="mb-1 small text-muted" th:text="${producto.floricultor.nombre}">Floricultor</p>
+  
+            <!-- Valoración (si no está implementada aún, puedes quitar esto o poner estrellas fijas) -->
+            <div class="mb-1">
+              <small>
+                ★★★★☆ <span class="text-muted">(8)</span>
+              </small>
+            </div>
+  
+            <!-- Precio -->
+            <p class="fw-semibold mb-0">Desde: <span th:text="${producto.precio} + '€'">0€</span></p>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+    <!-- Botón ver todas -->
+    <div class="text-center mt-4">
+      <a href="#" class="btn px-4 py-2" style="background-color: #D72684; color: white;">VER TODAS</a>
+    </div>
+  </section>
+  
+
+<!-- FOOTER -->
+<footer th:replace="fragments/footer :: footer"></footer>
+
 </body>
 </html>
