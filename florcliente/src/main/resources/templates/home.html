@@ -112,10 +112,11 @@
           
           <!-- Imagen del producto (debes añadir la propiedad imagen al producto si no está) -->
           <a th:href="@{/producto/{id}(id=${producto.idProducto})}">
-            <img th:src="@{'/images/' + ${producto.tipoFlor?.toLowerCase()} + '.jpg'}" 
-                 class="card-img-top rounded" 
-                 th:alt="${producto.nombre}" />
+            <img th:src="${producto.imagen}" 
+            class="card-img-top rounded" 
+            th:alt="${producto.nombre}" />
           </a>
+
   
           <div class="card-body px-2">
             <h6 class="card-title mb-0 text-primary" th:text="${producto.nombre}">Nombre</h6>

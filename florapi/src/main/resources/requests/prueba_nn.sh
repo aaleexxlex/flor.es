@@ -16,7 +16,7 @@ curl -X POST "$BASE_URL/productos" -H "Content-Type: application/json" -d '{
   "color": "Rojo",
   "precio": 10.5,
   "cantidad": 20,
-  "imagen": "/images/rosa-roja.jpg",
+  "imagen": "/images/rosas.jpg",
   "floricultor": {"email": "luis@example.com"}
 }'
 
@@ -26,7 +26,7 @@ curl -X POST "$BASE_URL/productos" -H "Content-Type: application/json" -d '{
   "color": "Blanco",
   "precio": 15.0,
   "cantidad": 15,
-  "imagen": "/images/lirio-blanco.jpg",
+  "imagen": "/images/lirios.jpg",
   "floricultor": {"email": "luis@example.com"}
 }'
 
@@ -36,7 +36,7 @@ curl -X POST "$BASE_URL/productos" -H "Content-Type: application/json" -d '{
   "color": "Amarillo",
   "precio": 12.0,
   "cantidad": 25,
-  "imagen": "/images/tulipan-amarillo.jpg",
+  "imagen": "/images/tulipanes.jpg",
   "floricultor": {"email": "marta@example.com"}
 }'
 
