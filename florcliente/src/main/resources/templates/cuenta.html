@@ -5,15 +5,50 @@
 
 <!-- NAVBAR -->
 <header th:replace="fragments/navbar :: navbar"></header>
-<h1>Mi cuenta</h1>
 
-<div th:if="${rol} == 'cliente'">
-  <h3>Pedidos realizados</h3>
-  <!-- Lista de pedidos del cliente -->
+
+<div class="container py-5">
+  <h1 class="text-center mb-5">Mi cuenta</h1>
+
+  <!-- Vista para cliente -->
+  <div th:if="${rol} == 'cliente'">
+    <h3 class="mb-4">Pedidos realizados</h3>
+    <div th:if="${#lists.isEmpty(pedidos)}">
+      <p>No tienes pedidos aún.</p>
+    </div>
+    <ul class="list-group" th:if="${!#lists.isEmpty(pedidos)}">
+      <li class="list-group-item" th:each="pedido : ${pedidos}">
+        Pedido #[[${pedido.id}]] - Fecha: [[${pedido.fecha}]]
+      </li>
+    </ul>
+  </div>
+
+  <!-- Vista para floricultor -->
+  <div th:if="${rol} == 'floricultor'">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="mb-0">Inventario de productos</h3>
+      <a href="/productos/nuevo" class="btn px-4 py-2" style="background-color: #D72684; color: white;">Añadir producto</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(productos)}">
+      <p>No has añadido productos aún.</p>
+    </div>
+    <ul class="list-group" th:if="${!#lists.isEmpty(productos)}">
+      <li class="list-group-item d-flex justify-content-between align-items-center"
+          th:each="producto : ${productos}">
+        [[${producto.nombre}]] - [[${producto.precio}]] €
+        <a th:href="@{'/eliminar/' + ${producto.id}}" class="btn btn-sm btn-danger">Eliminar</a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Botón de logout -->
+  <div class="text-center mt-5">
+    <a href="/logout" class="btn px-4 py-2" style="background-color: #D72684; color: white;">Cerrar sesión</a>
+  </div>
 </div>
 
-<div th:if="${rol} == 'floricultor'">
-  <h3>Inventario de productos</h3>
-  <a href="/catalogo/productos/nuevo" class="btn btn-sm btn-primary">Añadir producto</a>
-  <!-- Lista de productos creados -->
-</div>
+<!-- FOOTER -->
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

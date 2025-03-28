@@ -18,12 +18,12 @@ public class RegistroController {
         this.restTemplate = new RestTemplate();
     }
 
-    @GetMapping("/logout")
+    /*@GetMapping("/logout")
     public String Logout(Model model) {
      
         return "redirect:/catalogo"; // Muestra la vista de registro
     }
-
+*/
     @GetMapping("/login")
     public String mostrarFormularioLogin(Model model) {
      
@@ -53,6 +53,6 @@ public class RegistroController {
             restTemplate.postForObject(url, floricultor, Floricultor.class);
         }
 
-        return "redirect:/catalogo"; // Redirigir al catálogo después del registro
+        return "redirect:/home"; // Redirigir al catálogo después del registro
     }
 }
