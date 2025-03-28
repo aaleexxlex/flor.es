@@ -32,7 +32,7 @@ public class PedidoController {
         Optional<Pedido> pedido = pedidoRepository.findById(id);
         return pedido.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
+    
     @PostMapping
     public ResponseEntity<?> createPedido(@RequestBody Pedido pedido) {
         if (pedido.getCliente() == null) {
@@ -54,7 +54,20 @@ public class PedidoController {
         return ResponseEntity.ok(nuevo);
     }
     
-    
+    // Get pedidos by cliente email
+    // This method retrieves all pedidos associated with a specific cliente email.
+    @GetMapping("/cliente/{email}")
+    public List<Pedido> getPedidosByCliente(@PathVariable String email) {
+        return pedidoRepository.findByClienteEmail(email);
+    }
+
+    // Get pedidos by floricultor email
+    // This method retrieves all pedidos associated with a specific floricultor email.
+    @GetMapping("/floricultor/{email}")
+    public List<Pedido> getPedidosPorFloricultor(@PathVariable String email) {
+        return pedidoRepository.findByFloricultorEmail(email); // o como se llame tu método
+    }
+
 
     // Update an existing pedido
     @PutMapping("/{id}")

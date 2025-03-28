@@ -18,7 +18,7 @@
     </div>
     <ul class="list-group" th:if="${!#lists.isEmpty(pedidos)}">
       <li class="list-group-item" th:each="pedido : ${pedidos}">
-        Pedido #[[${pedido.id}]] - Fecha: [[${pedido.fecha}]]
+        Pedido #[[${pedido.idPedido}]] - Fecha: [[${pedido.fecha}]]
       </li>
     </ul>
   </div>
@@ -34,12 +34,33 @@
       <p>No has añadido productos aún.</p>
     </div>
     <ul class="list-group" th:if="${!#lists.isEmpty(productos)}">
-      <li class="list-group-item d-flex justify-content-between align-items-center"
-          th:each="producto : ${productos}">
-        [[${producto.nombre}]] - [[${producto.precio}]] €
-        <a th:href="@{'/eliminar/' + ${producto.idProducto}}" class="btn btn-sm btn-danger">Eliminar</a>
-      </li>
-    </ul>
+        <li class="list-group-item d-flex justify-content-between align-items-center"
+            th:each="producto : ${productos}">
+  
+          <span>
+            [[${producto.nombre}]] - [[${producto.precio}]] €
+          </span>
+  
+          <div>
+            <a th:href="@{'/producto/editar/' + ${producto.idProducto}}" class="btn btn-sm btn-warning me-2">Editar</a>
+            <a th:href="@{'/eliminar/' + ${producto.idProducto}}" class="btn btn-sm btn-danger">Eliminar</a>
+          </div>
+  
+        </li>
+      </ul>
+    <div class="mt-5">
+        <h3 class="mb-3">Pedidos recibidos</h3>
+      
+        <div th:if="${#lists.isEmpty(pedidosRecibidos)}">
+          <p>No has recibido pedidos aún.</p>
+        </div>
+      
+        <ul class="list-group" th:if="${!#lists.isEmpty(pedidosRecibidos)}">
+          <li class="list-group-item" th:each="pedido : ${pedidosRecibidos}">
+            Pedido #[[${pedido.idPedido}]] - Cliente: [[${pedido.cliente.nombre}]] - Fecha: [[${pedido.fecha}]]
+          </li>
+        </ul>
+      </div>
   </div>
 
   <!-- Botón de logout -->
