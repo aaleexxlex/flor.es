@@ -48,9 +48,9 @@ public class ProductoController {
         return productoRepository.findById(idProducto).map(producto -> {
             producto.setNombre(updatedProducto.getNombre());
             producto.setTipoFlor(updatedProducto.getTipoFlor());
-            producto.setColor(updatedProducto.getColor()); // ✅ nuevo campo
+            producto.setColor(updatedProducto.getColor()); 
             producto.setPrecio(updatedProducto.getPrecio());
-            producto.setCantidad(updatedProducto.getCantidad()); // ✅ nuevo campo
+            producto.setCantidad(updatedProducto.getCantidad()); 
             producto.setImagen(updatedProducto.getImagen());
             producto.setFloricultor(updatedProducto.getFloricultor());
             productoRepository.save(producto);
