@@ -192,3 +192,57 @@ select {
     padding: 10px;
     border-bottom: 1px solid #ddd;
 }
+.product-image-container {
+    width: 100%;
+    height: 250px; /* ajusta esto según el alto que quieras */
+    overflow: hidden;
+  }
+  
+  .product-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    transition: all 0.2s ease-in-out;
+  }
+  .miniatura {
+    width: 60px;
+    height: 60px;
+    background-color: #ccc;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .sidebar-compra {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  .precio {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  .btn-principal {
+    background-color: #D72684;
+    color: white;
+    border: none;
+  }
+  .btn-principal:hover {
+    background-color: #b51c6d;
+  }
+  .tag-size, .color-opcion {
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 5px;
+  }
+  .tag-size.active, .color-opcion.active {
+    border: 2px solid #D72684;
+  }
+  .info-verde {
+    color: green;
+  }
