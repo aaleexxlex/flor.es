@@ -1,23 +1,22 @@
 package es.upm.dit.isst.florcliente.model;
 
-
-import java.util.Date;
-import java.util.List;
 import lombok.*;
+import java.util.Date;
 
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Valoracion {
-  
+
     private Long idValoracion;
-    private String tipoValoracion;
-    private int calificacion;
+
+    private int calificacionPedido;
+    private int calificacionLogistica;
+
     private String comentario;
     private Date fecha;
-    
 
     private Pedido pedido;
-    
-    // Getters y Setters
 }

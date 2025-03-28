@@ -15,5 +15,7 @@ public class Cliente {
     private String email;
     private String direccion;
     
+    private List<Pedido> pedidos;
+
     // Getters y Setters
 }

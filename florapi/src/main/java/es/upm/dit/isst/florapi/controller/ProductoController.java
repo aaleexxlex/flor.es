@@ -16,13 +16,11 @@ public class ProductoController {
     @Autowired
     private ProductoRepository productoRepository;
 
-    // Obtener todos los productos
     @GetMapping
     public List<Producto> getAllProductos() {
         return productoRepository.findAll();
     }
 
-    // Obtener un producto por ID
     @GetMapping("/{idProducto}")
     public ResponseEntity<Producto> getProductoById(@PathVariable Long idProducto) {
         return productoRepository.findById(idProducto)
@@ -30,7 +28,6 @@ public class ProductoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Obtener productos por email del floricultor
     @GetMapping("/floricultor/{email}")
     public ResponseEntity<List<Producto>> getProductosByFloricultorEmail(@PathVariable String email) {
         List<Producto> productos = productoRepository.findByFloricultorEmail(email);
@@ -40,28 +37,27 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
-    // Crear un nuevo producto
     @PostMapping
     public ResponseEntity<Producto> createProducto(@RequestBody Producto newProducto) {
         Producto savedProducto = productoRepository.save(newProducto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProducto);
     }
 
-    // Actualizar completamente un producto
     @PutMapping("/{idProducto}")
     public ResponseEntity<Producto> updateProducto(@PathVariable Long idProducto, @RequestBody Producto updatedProducto) {
         return productoRepository.findById(idProducto).map(producto -> {
             producto.setNombre(updatedProducto.getNombre());
             producto.setTipoFlor(updatedProducto.getTipoFlor());
+            producto.setColor(updatedProducto.getColor()); // ✅ nuevo campo
             producto.setPrecio(updatedProducto.getPrecio());
-            producto.setImagen(updatedProducto.getImagen()); // ¡AQUÍ!
+            producto.setCantidad(updatedProducto.getCantidad()); // ✅ nuevo campo
+            producto.setImagen(updatedProducto.getImagen());
             producto.setFloricultor(updatedProducto.getFloricultor());
             productoRepository.save(producto);
             return ResponseEntity.ok(producto);
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Actualización parcial
     @PatchMapping("/{idProducto}")
     public ResponseEntity<Producto> partialUpdateProducto(@PathVariable Long idProducto, @RequestBody Producto partialProducto) {
         return productoRepository.findById(idProducto).map(producto -> {
@@ -71,8 +67,14 @@ public class ProductoController {
             if (partialProducto.getTipoFlor() != null) {
                 producto.setTipoFlor(partialProducto.getTipoFlor());
             }
+            if (partialProducto.getColor() != null) {
+                producto.setColor(partialProducto.getColor()); // ✅
+            }
             if (partialProducto.getPrecio() > 0) {
                 producto.setPrecio(partialProducto.getPrecio());
+            }
+            if (partialProducto.getCantidad() > 0) {
+                producto.setCantidad(partialProducto.getCantidad()); // ✅
             }
             if (partialProducto.getImagen() != null) {
                 producto.setImagen(partialProducto.getImagen());
@@ -85,7 +87,6 @@ public class ProductoController {
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Eliminar producto
     @DeleteMapping("/{idProducto}")
     public ResponseEntity<Void> deleteProducto(@PathVariable Long idProducto) {
         if (productoRepository.existsById(idProducto)) {

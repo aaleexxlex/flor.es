@@ -170,13 +170,38 @@ class FlorController {
     @PostMapping("/productos/crear/{email}")
     public String crearProducto(@PathVariable String email, @ModelAttribute Producto producto) {
         try {
-            String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/productos").toUriString();
-            restTemplate.postForObject(url, producto, Producto.class);
+            String urlFloricultor = UriComponentsBuilder
+                    .fromHttpUrl(baseUrl + "/floricultores/" + email)
+                    .toUriString();
+            Floricultor floricultor = restTemplate.getForObject(urlFloricultor, Floricultor.class);
+    
+            producto.setFloricultor(floricultor);
+            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor()));
+    
+            String urlProducto = UriComponentsBuilder
+                    .fromHttpUrl(baseUrl + "/productos")
+                    .toUriString();
+            restTemplate.postForObject(urlProducto, producto, Producto.class);
         } catch (Exception e) {
-            // Manejar el error si la creación del producto falla
+            System.err.println("Error al crear el producto: " + e.getMessage());
+            e.printStackTrace();
         }
-
+    
         return "redirect:/catalogo/catalogoFloricultor/" + email;
+    }
+    
+    
+    private String asignarImagenPorTipo(String tipo) {
+        tipo = tipo.toLowerCase();
+        return switch (tipo) {
+            case "rosa" -> "/images/rosas.jpg";
+            case "tulipán" -> "/images/tulipanes.jpg";
+            case "girasol" -> "/images/girasoles.jpeg";
+            case "lirio" -> "/images/lirios.jpg";
+            case "margarita" -> "/images/margaritas.jpg";
+            case "peonía", "peonia" -> "/images/peonias.jpg";
+            default -> "/images/floresvarias.webp";
+        };
     }
 
     @GetMapping("/pedidos/nuevo")

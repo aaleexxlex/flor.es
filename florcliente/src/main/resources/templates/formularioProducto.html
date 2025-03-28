@@ -32,10 +32,13 @@
             </div>
 
             <div class="form-group">
-                <label for="floricultor">Floricultor</label>
-                <select id="floricultor" th:field="*{floricultor.email}" required>
-                    <option th:value="${floricultor.email}" th:text="${floricultor.nombre}"></option>
-                </select>
+                <label for="color">Color de la Flor</label>
+                <input type="text" id="color" th:field="*{color}" required/>
+            </div>
+            
+            <div class="form-group">
+                <label for="cantidad">Cantidad Disponible</label>
+                <input type="number" id="cantidad" th:field="*{cantidad}" min="0" required/>
             </div>
 
             <div class="form-group">

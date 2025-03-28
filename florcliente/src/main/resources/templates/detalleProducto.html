@@ -24,14 +24,27 @@
                 <td th:text="${producto.tipoFlor}">Tipo</td>
             </tr>
             <tr>
+                <th>Color:</th>
+                <td th:text="${producto.color}">Color</td>
+            </tr>
+            <tr>
                 <th>Precio:</th>
                 <td th:text="${producto.precio}">0.0</td>
+            </tr>
+            <tr>
+                <th>Cantidad Disponible:</th>
+                <td th:text="${producto.cantidad}">0</td>
             </tr>
             <tr>
                 <th>Floricultor:</th>
                 <td th:text="${producto.floricultor.nombre}">Floricultor</td>
             </tr>
         </table>
+
+        <div class="product-image" style="margin-top: 20px;">
+            <img th:src="@{${producto.imagen}}" th:alt="'Flor: ' + ${producto.nombre}" style="max-width: 300px;" />
+        </div>
+
     </div>
 
 </body>

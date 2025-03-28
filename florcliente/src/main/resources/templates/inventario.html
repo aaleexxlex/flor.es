@@ -20,9 +20,16 @@
                     <span>
                         <strong th:text="${producto.nombre}">Nombre</strong> –
                         <span th:text="${producto.tipoFlor}">Tipo</span>,
+                        Color: <span th:text="${producto.color}">Color</span>,
+                        Cantidad: <span th:text="${producto.cantidad}">0</span>,
                         Precio: <span th:text="${producto.precio}">0.0</span>,
                         Floricultor: <span th:text="${producto.floricultor.nombre}">Floricultor</span>
                     </span>
+
+                    <div class="product-thumbnail" style="margin-top: 8px;">
+                        <img th:src="@{${producto.imagen}}" th:alt="'Flor: ' + ${producto.nombre}" style="max-width: 120px; border-radius: 8px;" />
+                    </div>
+
                     <a th:href="@{'/catalogo/eliminar/' + ${producto.idProducto} + '?email=' + ${email}}" class="delete-button">Eliminar</a>
                 </div>
             </li>

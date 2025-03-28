@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"lineasPedido", "floricultor"}) // evitamos ciclos infinitos
+@ToString(exclude = {"lineasPedido", "floricultor"})
 public class Producto {
 
     @Id
@@ -21,8 +21,9 @@ public class Producto {
 
     private String nombre;
     private String tipoFlor;
+    private String color;
     private double precio;
-
+    private int cantidad;
     private String imagen;
 
     @ManyToOne
