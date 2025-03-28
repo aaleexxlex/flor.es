@@ -14,7 +14,7 @@
     <div class="container">
         <h1>Añadir Nuevo Producto</h1>
 
-        <form action="#" th:action="@{'/catalogo/productos/crear/' + ${floricultor.email}}" th:object="${producto}" method="post" class="form">
+        <form action="#" th:action="@{'/productos/crear/' + ${floricultor.email}}" th:object="${producto}" method="post" class="form">
 
             <div class="form-group">
                 <label for="nombre">Nombre</label>

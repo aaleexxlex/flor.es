@@ -4,6 +4,7 @@ import es.upm.dit.isst.florcliente.model.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Arrays;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
@@ -53,7 +55,7 @@ public class FlorController {
                 model.addAttribute("rol", "floricultor");
                 return "redirect:/home";
             } catch (Exception ex) {
-                return "redirect:/login?error";
+                return "redirect:/error"; // Redirigir a una página de error si no se encuentra el usuario
             }
         }
     }
@@ -70,22 +72,38 @@ public class FlorController {
     }
 
     @GetMapping("/cuenta")
-    public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAttribute("usuario") Object usuario) {
-        if ("cliente".equals(rol)) {
-            List<Pedido> pedidos = new ArrayList<>();
-            try {
-                pedidos = restTemplate.getForObject(baseUrl + "/pedidos/cliente/" + ((Cliente) usuario).getEmail(), List.class);
-            } catch (Exception ignored) {}
-            model.addAttribute("pedidos", pedidos);
-        } else if ("floricultor".equals(rol)) {
-            List<Producto> productos = new ArrayList<>();
-            try {
-                productos = restTemplate.getForObject(baseUrl + "/productos/floricultor/" + ((Floricultor) usuario).getEmail(), List.class);
-            } catch (Exception ignored) {}
-            model.addAttribute("productos", productos);
+public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAttribute("usuario") Object usuario) {
+    if ("cliente".equals(rol)) {
+        List<Pedido> pedidos = new ArrayList<>();
+        try {
+            ResponseEntity<List<Pedido>> response = restTemplate.exchange(
+                baseUrl + "/pedidos/cliente/" + ((Cliente) usuario).getEmail(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Pedido>>() {}
+            );
+            pedidos = response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return "cuenta";
+        model.addAttribute("pedidos", pedidos);
+    } else if ("floricultor".equals(rol)) {
+        List<Producto> productos = new ArrayList<>();
+        try {
+            ResponseEntity<List<Producto>> response = restTemplate.exchange(
+                baseUrl + "/productos/floricultor/" + ((Floricultor) usuario).getEmail(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Producto>>() {}
+            );
+            productos = response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        model.addAttribute("productos", productos);
     }
+    return "cuenta";
+}
     @GetMapping("/tienda")
     public String mostrarTienda(Model model) {
     try {
@@ -127,16 +145,41 @@ public class FlorController {
         model.addAttribute("floricultor", floricultor);
         return "formularioProducto";
     }
-
-    @PostMapping("/productos/crear")
-    public String crearProducto(@ModelAttribute Producto producto, @ModelAttribute("usuario") Floricultor floricultor) {
+    @PostMapping("/productos/crear/{email}")
+    public String crearProducto(@PathVariable String email, @ModelAttribute Producto producto) {
         try {
+            String urlFloricultor = UriComponentsBuilder
+                    .fromHttpUrl(baseUrl + "/floricultores/" + email)
+                    .toUriString();
+            Floricultor floricultor = restTemplate.getForObject(urlFloricultor, Floricultor.class);
+    
             producto.setFloricultor(floricultor);
-            restTemplate.postForObject(baseUrl + "/productos", producto, Producto.class);
+            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor()));
+    
+            String urlProducto = UriComponentsBuilder
+                    .fromHttpUrl(baseUrl + "/productos")
+                    .toUriString();
+            restTemplate.postForObject(urlProducto, producto, Producto.class);
         } catch (Exception e) {
-            // error al crear
+            System.err.println("Error al crear el producto: " + e.getMessage());
+            e.printStackTrace();
         }
+    
         return "redirect:/cuenta";
+    }
+    
+
+    private String asignarImagenPorTipo(String tipo) {
+        tipo = tipo.toLowerCase();
+        return switch (tipo) {
+            case "rosa" -> "/images/rosas.jpg";
+            case "tulipán" -> "/images/tulipanes.jpg";
+            case "girasol" -> "/images/girasoles.jpeg";
+            case "lirio" -> "/images/lirios.jpg";
+            case "margarita" -> "/images/margaritas.jpg";
+            case "peonía", "peonia" -> "/images/peonias.jpg";
+            default -> "/images/floresvarias.webp";
+        };
     }
 
     @GetMapping("/eliminar/{id}")
