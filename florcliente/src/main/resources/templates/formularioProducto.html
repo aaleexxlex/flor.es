@@ -2,19 +2,29 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Nuevo Producto</title>
+    <title th:text="${producto.idProducto} != null ? 'Editar Producto' : 'Nuevo Producto'">Formulario Producto</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
     <nav class="navbar">
-        <a href="/catalogo">← Volver al catálogo</a>
+        <a href="/cuenta">← Volver a mi cuenta</a>
     </nav>
 
     <div class="container">
-        <h1>Añadir Nuevo Producto</h1>
+        <h1 th:text="${producto.idProducto} != null ? 'Editar Producto' : 'Añadir Nuevo Producto'">Formulario</h1>
 
-        <form action="#" th:action="@{'/productos/crear/' + ${floricultor.email}}" th:object="${producto}" method="post" class="form">
+        <form th:action="${producto.idProducto} != null ?
+                         @{/producto/editar} :
+                         @{'/productos/crear/' + ${floricultor.email}}"
+              th:object="${producto}"
+              method="post"
+              class="form">
+
+            <!-- Campo oculto solo para edición -->
+            <input type="hidden" th:if="${producto.idProducto} != null" th:field="*{idProducto}" />
+            <input type="hidden" th:field="*{floricultor.email}" />
+
 
             <div class="form-group">
                 <label for="nombre">Nombre</label>
@@ -35,14 +45,17 @@
                 <label for="color">Color de la Flor</label>
                 <input type="text" id="color" th:field="*{color}" required/>
             </div>
-            
+
             <div class="form-group">
                 <label for="cantidad">Cantidad Disponible</label>
                 <input type="number" id="cantidad" th:field="*{cantidad}" min="0" required/>
             </div>
 
             <div class="form-group">
-                <button type="submit" class="button">Crear Producto</button>
+                <button type="submit" class="button"
+                        th:text="${producto.idProducto} != null ? 'Guardar cambios' : 'Crear Producto'">
+                    Crear Producto
+                </button>
             </div>
 
         </form>

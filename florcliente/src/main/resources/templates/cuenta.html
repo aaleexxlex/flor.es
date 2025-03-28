@@ -36,10 +36,19 @@
     <ul class="list-group" th:if="${!#lists.isEmpty(productos)}">
       <li class="list-group-item d-flex justify-content-between align-items-center"
           th:each="producto : ${productos}">
-        [[${producto.nombre}]] - [[${producto.precio}]] €
-        <a th:href="@{'/eliminar/' + ${producto.idProducto}}" class="btn btn-sm btn-danger">Eliminar</a>
+        
+        <span>
+          [[${producto.nombre}]] - [[${producto.precio}]] €
+        </span>
+    
+        <div>
+          <a th:href="@{'/producto/editar/' + ${producto.idProducto}}" class="btn btn-sm btn-warning me-2">Editar</a>
+          <a th:href="@{'/eliminar/' + ${producto.idProducto}}" class="btn btn-sm btn-danger">Eliminar</a>
+        </div>
+    
       </li>
     </ul>
+    
   </div>
 
   <!-- Botón de logout -->

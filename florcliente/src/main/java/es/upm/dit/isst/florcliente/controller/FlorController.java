@@ -191,4 +191,30 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
         }
         return "redirect:/cuenta";
     }
+//Editar producto del inventario
+
+@GetMapping("/producto/editar/{id}")
+public String mostrarFormularioEditarProducto(@PathVariable Long id, Model model) {
+    try {
+        Producto producto = restTemplate.getForObject(baseUrl + "/productos/" + id, Producto.class);
+        model.addAttribute("producto", producto);
+    } catch (Exception e) {
+        model.addAttribute("producto", null);
+    }
+    return "formularioProducto";
 }
+
+@PostMapping("/producto/editar")
+public String actualizarProducto(@ModelAttribute Producto producto) {
+    try {
+        producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor()));
+        restTemplate.put(baseUrl + "/productos/" + producto.getIdProducto(), producto);
+    } catch (Exception e) {
+        System.err.println("Error al actualizar el producto: " + e.getMessage());
+    }
+    return "redirect:/cuenta";
+}
+}
+
+
+
