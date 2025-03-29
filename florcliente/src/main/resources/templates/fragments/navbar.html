@@ -15,7 +15,7 @@
           <div class="text-end">
             <small class="d-block text-muted">24/7 SOPORTE</small>
             <i class="bi bi-telephone-fill"></i>
-            <strong>(+965) 7492-4277</strong>
+            <strong>(+34) 630539981</strong>
           </div>
           <div class="vr"></div>
           <div class="text-end">
@@ -33,12 +33,13 @@
               Log in
             </a>
           </div>
-          <div class="text-end">
-            <small class="d-block text-muted">CARRITO</small>
-            <a href="/carrito" class="text-dark text-decoration-none">
-              <i class="bi bi-cart fs-4"></i> 150.00 €
-            </a>
-          </div>
+<div class="text-end">
+  <small class="d-block text-muted">CARRITO</small>
+  <a href="/carrito/ver" class="text-dark text-decoration-none">
+    <i class="bi bi-cart fs-4"></i>
+    <span th:text="${#numbers.formatDecimal(totalCarrito, 1, 'COMMA', 2, 'POINT')} + ' €'">0.00 €</span>
+  </a>
+</div>
         </div>
       </div>
     </div>
