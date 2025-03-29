@@ -142,8 +142,9 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
 
 
     @GetMapping("/logout")
-    public String cerrarSesion(SessionStatus status) {
+    public String cerrarSesion(SessionStatus status,HttpSession session) {
         status.setComplete();
+        session.invalidate();
         return "redirect:/home";
     }
 

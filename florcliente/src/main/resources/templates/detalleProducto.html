@@ -25,18 +25,17 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <header th:replace="~{fragments/navbar :: navbar}"></header>
 
 <div class="container-fluid px-5 my-5">
   <div class="row">
 
-    <!-- Columna izquierda: Imagen -->
+    <!-- Imagen producto -->
     <div class="col-md-4 d-flex justify-content-center align-items-start">
       <img th:src="@{${producto.imagen}}" th:alt="'Imagen de ' + ${producto.nombre}" class="img-fluid rounded imagen-producto" />
     </div>
 
-    <!-- Columna central: Detalles -->
+    <!-- Detalles -->
     <div class="col-md-4">
       <h4 class="text-center" th:text="${producto.nombre}">Nombre</h4>
       <p class="text-center" th:text="'Floricultor: ' + ${producto.floricultor.nombre}">Floricultor</p>
@@ -65,12 +64,11 @@
       </p>
     </div>
 
-    <!-- Columna derecha: caja compra -->
+    <!-- Caja compra -->
     <div class="col-md-4">
       <div class="sidebar-compra">
         <div class="precio mb-2" th:text="${producto.precio} + ' €'">3 €</div>  
         <img src="/images/visa_mastercard.png" alt="Métodos de pago" class="mb-3" style="max-width: 100px;">
-
 
         <!-- Tamaños -->
         <label class="form-label">Tamaño:</label>
@@ -81,16 +79,28 @@
           <div class="tag-size" data-cantidad="24">24 flores</div>
         </div>
 
-        <!-- Cantidad -->
-        <label class="form-label">Cantidad</label>
-        <div class="input-group mb-3" style="width: 120px;">
-          <button class="btn btn-outline-secondary" id="restar">-</button>
-          <input type="number" class="form-control text-center" value="1" min="1" id="cantidad">
-          <button class="btn btn-outline-secondary" id="sumar">+</button>
-        </div>
+        <!-- Formulario de compra -->
+        <form th:action="@{/carrito/agregar}" method="post">
+          <input type="hidden" name="idProducto" th:value="${producto.idProducto}" />
+          <input type="hidden" name="nombre" th:value="${producto.nombre}" />
+          <input type="hidden" name="tipoFlor" th:value="${producto.tipoFlor}" />
+          <input type="hidden" name="precio" th:value="${producto.precio}" />
+          <input type="hidden" name="imagen" th:value="${producto.imagen}" />
+          <input type="hidden" name="cantidad" id="cantidadHidden" value="1" />
+          <input type="hidden" name="floricultor.nombre" th:value="${producto.floricultor.nombre}" />
+          <input type="hidden" name="floricultor.email" th:value="${producto.floricultor.email}" />
+          <input type="hidden" name="floricultor.ubicacion" th:value="${producto.floricultor.ubicacion}" />
 
-        <!-- Botón -->
-        <button class="btn btn-principal w-100">Añadir al carrito</button>
+
+          <label class="form-label">Cantidad</label>
+          <div class="input-group mb-3" style="width: 120px;">
+            <button type="button" class="btn btn-outline-secondary" id="restar">-</button>
+            <input type="number" class="form-control text-center" value="1" min="1" id="cantidad">
+            <button type="button" class="btn btn-outline-secondary" id="sumar">+</button>
+          </div>
+
+          <button type="submit" class="btn btn-principal w-100">Añadir al carrito</button>
+        </form>
 
         <!-- Envío -->
         <p class="mt-3 text-muted small">
@@ -102,36 +112,41 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<!-- Script para sumar/restar y seleccionar tamaño -->
 <script>
   const btnSumar = document.getElementById('sumar');
   const btnRestar = document.getElementById('restar');
   const inputCantidad = document.getElementById('cantidad');
+  const inputHidden = document.getElementById('cantidadHidden');
   const sizeButtons = document.querySelectorAll('.tag-size');
+
+  function actualizarHidden() {
+    inputHidden.value = inputCantidad.value;
+  }
 
   btnSumar.addEventListener('click', () => {
     inputCantidad.value = parseInt(inputCantidad.value) + 1;
+    actualizarHidden();
   });
 
   btnRestar.addEventListener('click', () => {
     const actual = parseInt(inputCantidad.value);
     if (actual > 1) {
       inputCantidad.value = actual - 1;
+      actualizarHidden();
     }
   });
 
+  inputCantidad.addEventListener('input', actualizarHidden);
+
   sizeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      // Quitar clase active a todos
       sizeButtons.forEach(b => b.classList.remove('active'));
-      // Añadir clase active al clicado
       btn.classList.add('active');
-      // Cambiar el valor del input cantidad
       const cantidad = btn.getAttribute('data-cantidad');
       inputCantidad.value = cantidad;
+      actualizarHidden();
     });
   });
 </script>
