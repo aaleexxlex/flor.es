@@ -66,8 +66,10 @@ public class CarritoController {
     @PostMapping("/vaciar")
     public String vaciarCarrito(HttpSession session) {
         session.removeAttribute("carrito");
-        return "redirect:/carrito/ver";
+        return "redirect:/home";
     }
+    
+    
 
     @ModelAttribute("totalCarrito")
     public double getTotalCarrito(HttpSession session) {

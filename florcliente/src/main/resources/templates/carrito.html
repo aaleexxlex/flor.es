@@ -14,7 +14,11 @@
       <p>Tu carrito está vacío.</p>
     </div>
 
-    <div th:each="linea : ${carrito}" class="card mb-3 p-3 d-flex flex-row justify-content-between align-items-center">
+    <div th:each="linea : ${carrito}"
+         class="card mb-3 p-3 d-flex flex-row justify-content-between align-items-center producto-carrito"
+         th:attr="data-id-producto=${linea.producto.idProducto},
+                  data-precio=${linea.precioUnitario},
+                  data-email-floricultor=${linea.producto.floricultor.email}">
       <div class="d-flex align-items-center">
         <img th:src="@{${linea.producto.imagen}}" th:alt="${linea.producto.nombre}" class="img-thumbnail" style="width: 100px;">
         <div class="ms-3">
@@ -30,6 +34,7 @@
             <button class="btn btn-outline-secondary btn-sm">−</button>
           </form>
           <span class="contador" th:text="${linea.cantidad}">1</span>
+          <input type="hidden" class="cantidad" th:value="${linea.cantidad}" />
           <form method="post" th:action="@{/carrito/sumar}">
             <input type="hidden" name="idProducto" th:value="${linea.producto.idProducto}" />
             <button class="btn btn-outline-secondary btn-sm">+</button>
@@ -44,9 +49,9 @@
   <div class="col-md-3">
     <div class="card p-3">
       <h5>Datos</h5>
-      <input type="text" class="form-control my-2" placeholder="País">
-      <input type="text" class="form-control my-2" placeholder="Ciudad">
-      <input type="text" class="form-control my-2" placeholder="Código postal">
+      <input type="text" name="pais" class="form-control my-2" placeholder="País">
+      <input type="text" name="ciudad" class="form-control my-2" placeholder="Ciudad">
+      <input type="text" name="codigoPostal" class="form-control my-2" placeholder="Código postal">
 
       <hr>
       <div class="d-flex justify-content-between">
@@ -64,8 +69,12 @@
         <strong class="text-danger" th:text="${total + 4.5 + '€'}">0€</strong>
       </div>
 
-      <form method="post" th:action="@{/pedido/confirmar}">
-        <button class="btn btn-principal mt-3 w-100">CHECKOUT</button>
+      <form onsubmit="return false;">
+        <button id="checkoutBtn"
+                class="btn btn-principal mt-3 w-100"
+                th:attr="data-email-cliente=${usuario != null ? usuario.email : 'anonimo'}">
+          COMPLETAR
+        </button>
       </form>
     </div>
   </div>
@@ -74,6 +83,75 @@
 
 <!-- FOOTER -->
 <footer th:replace="fragments/footer :: footer"></footer>
+
+<!-- SCRIPT DE CHECKOUT -->
+<script>
+document.getElementById("checkoutBtn").addEventListener("click", function () {
+  const pais = document.querySelector("input[name='pais']").value.trim();
+  const ciudad = document.querySelector("input[name='ciudad']").value.trim();
+  const cp = document.querySelector("input[name='codigoPostal']").value.trim();
+
+  if (!pais || !ciudad || !cp) {
+    alert("Por favor, completa todos los campos de dirección.");
+    return;
+  }
+
+  const destino = `${pais}, ${ciudad}, ${cp}`;
+  const emailCliente = this.dataset.emailCliente;
+  const productos = Array.from(document.querySelectorAll(".producto-carrito"));
+
+  if (productos.length === 0) {
+    alert("El carrito está vacío.");
+    return;
+  }
+
+  const emailFloricultor = productos[0].dataset.emailFloricultor;
+  if (!emailCliente || emailCliente === "anonimo") {
+  alert("Debes iniciar sesión para completar tu pedido.");
+  window.location.href = "/login";
+  return;
+}
+
+  const lineasPedido = productos.map(prod => {
+    return {
+      producto: { idProducto: parseInt(prod.dataset.idProducto) },
+      cantidad: parseInt(prod.querySelector(".cantidad").value),
+      precioUnitario: parseFloat(prod.dataset.precio)
+    };
+  });
+
+  const pedido = {
+    cliente: { email: emailCliente },
+    floricultor: { email: emailFloricultor },
+    estado: "PENDIENTE",
+    destino: destino,
+    lineasPedido: lineasPedido
+  };
+
+  fetch("http://localhost:8080/pedidos", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(pedido)
+  })
+  .then(res => {
+    if (!res.ok) throw new Error("Error al crear el pedido.");
+    return res.json();
+  })
+  .then(() => {
+    // Vaciar el carrito
+    return fetch("/carrito/vaciar", { method: "POST" });
+  })
+  .then(() => {
+    // Redirigir al resumen
+    window.location.href = "/pedido/confirmado";
+  })
+  .catch(err => {
+    alert("Hubo un problema al procesar tu pedido: " + err.message);
+  });
+});
+</script>
 
 </body>
 </html>

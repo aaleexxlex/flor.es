@@ -250,6 +250,12 @@ public String actualizarProducto(@ModelAttribute Producto producto) {
     }
     return "redirect:/cuenta";
 }
+
+@GetMapping("/pedido/confirmado")
+public String mostrarConfirmacion() {
+    return "pedidoConfirmado";
+}
+
 }
 
 
