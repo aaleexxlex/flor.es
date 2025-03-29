@@ -5,7 +5,16 @@
 
 <!-- NAVBAR -->
 <header th:replace="fragments/navbar :: navbar"></header>
-
+<nav aria-label="breadcrumb" class="px-5 py-2 ms-5 mt-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="/home" class="text-decoration-none text-rosita">Inicio</a>
+      </li>
+      <li class="breadcrumb-item active text-capitalize" aria-current="page">
+        Tienda
+      </li>
+    </ol>
+  </nav>
 <div th:replace="fragments/categorizacionCircular :: categoriasCirculares"></div>
   
 <section class="container-fluid py-5 px-5 mx-auto">
