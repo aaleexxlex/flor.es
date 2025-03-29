@@ -8,39 +8,29 @@
 
 <div th:replace="fragments/categorizacionCircular :: categoriasCirculares"></div>
   
-  <section class="container-fluid py-5 px-5 ms-5">
-    <h3 class="mb-4">Todas las flores cerca de mí</h3>
-    
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+<section class="container-fluid py-5 px-5 mx-auto">
+    <h3 class="mb-4">Todas las flores disponibles</h3>
+  
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4 mt-3">
       <div class="col" th:each="producto : ${productos}">
-        <div class="card h-100 border-0 shadow-sm">
-          
-          <!-- Imagen del producto (debes añadir la propiedad imagen al producto si no está) -->
-          <a th:href="@{/catalogo/producto/{id}(id=${producto.idProducto})}">
-            <img th:src="@{'/images/' + ${producto.tipoFlor?.toLowerCase()} + '.jpg'}" 
-                 class="card-img-top rounded" 
-                 th:alt="${producto.nombre}" />
-          </a>
-  
-          <div class="card-body px-2">
-            <h6 class="card-title mb-0 text-primary" th:text="${producto.nombre}">Nombre</h6>
-            <p class="mb-1 small text-muted" th:text="${producto.floricultor.nombre}">Floricultor</p>
-  
-            <!-- Valoración (si no está implementada aún, puedes quitar esto o poner estrellas fijas) -->
-            <div class="mb-1">
-              <small>
-                ★★★★☆ <span class="text-muted">(8)</span>
-              </small>
+        <a th:href="@{/producto/{id}(id=${producto.idProducto})}" style="text-decoration: none; color: inherit;">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="product-image-container">
+              <img th:src="${producto.imagen}" class="card-img-top" th:alt="${producto.nombre}" />
             </div>
-  
-            <!-- Precio -->
-            <p class="fw-semibold mb-0">Desde: <span th:text="${producto.precio} + '€'">0€</span></p>
+            <div class="card-body px-2">
+              <h6 class="card-title mb-0 text-rosita" th:text="${producto.nombre}">Nombre</h6>
+              <p class="mb-1 small text-muted" th:text="${producto.floricultor.nombre}">Floricultor</p>
+              <div class="mb-1">
+                <small>★★★★☆ <span class="text-muted">(8)</span></small>
+              </div>
+              <p class="fw-semibold mb-0">Desde: <span th:text="${producto.precio} + '€'">0€</span></p>
+              <span class="stretched-link"></span>
+            </div>
           </div>
-  
-        </div>
+        </a>
       </div>
     </div>
-  
   </section>
 
 <!-- FOOTER -->
