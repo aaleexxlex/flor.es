@@ -57,6 +57,10 @@ public class ProductoController {
             return ResponseEntity.ok(producto);
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
+    @GetMapping("/productos/tipo/{tipoFlor}")
+    public List<Producto> getProductosPorTipo(@PathVariable String tipoFlor) {
+        return productoRepository.findByTipoFlorIgnoreCase(tipoFlor);
+    }
 
     @PatchMapping("/{idProducto}")
     public ResponseEntity<Producto> partialUpdateProducto(@PathVariable Long idProducto, @RequestBody Producto partialProducto) {

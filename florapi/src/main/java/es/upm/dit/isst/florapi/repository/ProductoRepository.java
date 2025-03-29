@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByFloricultorEmail(String email);
+    List<Producto> findByTipoFlorIgnoreCase(String tipoFlor);
 }
