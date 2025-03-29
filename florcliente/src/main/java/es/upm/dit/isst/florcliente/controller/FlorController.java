@@ -211,7 +211,6 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
         return "redirect:/cuenta";
     }
 //Editar producto del inventario
-
 @GetMapping("/producto/editar/{id}")
 public String mostrarFormularioEditarProducto(@PathVariable Long id, Model model) {
     try {
@@ -221,6 +220,23 @@ public String mostrarFormularioEditarProducto(@PathVariable Long id, Model model
         model.addAttribute("producto", null);
     }
     return "formularioProducto";
+}
+
+//Ver detalle del pedido
+@GetMapping("/pedido/{id}")
+public String verDetallePedido(@PathVariable Long id, Model model) {
+    RestTemplate restTemplate = new RestTemplate();
+    String url = "http://localhost:8080/pedidos/" + id;
+
+    try {
+        ResponseEntity<Pedido> response = restTemplate.getForEntity(url, Pedido.class);
+        Pedido pedido = response.getBody();
+        model.addAttribute("pedido", pedido);
+        return "detallePedido";
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/cuenta"; // redirige si hay error
+    }
 }
 
 @PostMapping("/producto/editar")

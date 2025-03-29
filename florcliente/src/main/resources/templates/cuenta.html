@@ -17,10 +17,11 @@
       <p>No tienes pedidos aún.</p>
     </div>
     <ul class="list-group" th:if="${!#lists.isEmpty(pedidos)}">
-      <li class="list-group-item" th:each="pedido : ${pedidos}">
-        Pedido #[[${pedido.idPedido}]] - Fecha: [[${pedido.fecha}]]
-      </li>
-    </ul>
+        <li class="list-group-item d-flex justify-content-between align-items-center" th:each="pedido : ${pedidos}">
+          <span>Pedido #[[${pedido.idPedido}]] - Fecha: [[${pedido.fecha}]] - Total: [[${pedido.getTotal()}]]</span>
+          <a th:href="@{/pedido/{id}(id=${pedido.idPedido})}" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+        </li>
+      </ul>
   </div>
 
   <!-- Vista para floricultor -->
@@ -56,10 +57,12 @@
         </div>
       
         <ul class="list-group" th:if="${!#lists.isEmpty(pedidosRecibidos)}">
-          <li class="list-group-item" th:each="pedido : ${pedidosRecibidos}">
-            Pedido #[[${pedido.idPedido}]] - Cliente: [[${pedido.cliente.nombre}]] - Fecha: [[${pedido.fecha}]]
-          </li>
-        </ul>
+            <li class="list-group-item d-flex justify-content-between align-items-center" th:each="pedido : ${pedidosRecibidos}">
+              <span>Pedido #[[${pedido.idPedido}]] - Cliente: [[${pedido.cliente.nombre}]] - Fecha: [[${pedido.fecha}]] - Total: [[${pedido.getTotal()}]]</span>
+              <a th:href="@{/pedido/{id}(id=${pedido.idPedido})}" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+            </li>
+          </ul>
+          
       </div>
   </div>
 
