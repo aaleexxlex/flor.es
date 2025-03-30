@@ -9,15 +9,21 @@ import java.util.List;
 import java.util.Optional;
 import es.upm.dit.isst.florapi.model.LineaPedido;
 
+import es.upm.dit.isst.florapi.model.Producto;
+import es.upm.dit.isst.florapi.repository.ProductoRepository;
+
 
 @RestController
 @RequestMapping("/pedidos")
 public class PedidoController {
 
     private final PedidoRepository pedidoRepository;
+    private final ProductoRepository productoRepository;
 
-    public PedidoController(PedidoRepository pedidoRepository) {
+
+    public PedidoController(PedidoRepository pedidoRepository, ProductoRepository productoRepository) {
         this.pedidoRepository = pedidoRepository;
+        this.productoRepository = productoRepository;
     }
 
     // Get all pedidos
@@ -47,9 +53,28 @@ public class PedidoController {
     
         // Asociar cada LineaPedido con el Pedido actual
         for (LineaPedido lp : pedido.getLineasPedido()) {
+            Producto producto = lp.getProducto();
+            if (producto == null || producto.getIdProducto() == null) {
+                return ResponseEntity.badRequest().body("Cada línea debe contener un producto válido.");
+            }
+    
+            Producto productoBD = productoRepository.findById(producto.getIdProducto()).orElse(null);
+            if (productoBD == null) {
+                return ResponseEntity.badRequest().body("Producto no encontrado: ID " + producto.getIdProducto());
+            }
+    
+            if (productoBD.getCantidad() < lp.getCantidad()) {
+                return ResponseEntity.badRequest().body("Stock insuficiente para el producto: " + productoBD.getNombre());
+            }
+    
+            // Reducimos el stock
+            productoBD.setCantidad(productoBD.getCantidad() - lp.getCantidad());
+            productoRepository.save(productoBD);
+    
+            // Aseguramos que la línea esté enlazada al producto y pedido correcto
+            lp.setProducto(productoBD);
             lp.setPedido(pedido);
         }
-    
         Pedido nuevo = pedidoRepository.save(pedido);
         return ResponseEntity.ok(nuevo);
     }

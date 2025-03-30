@@ -24,17 +24,29 @@ public class CarritoController {
         return "";
     }
 
+    //Agregar al carrito pero solo de un mismo floricultor: Importante esto.
     @PostMapping("/agregar")
-    public String agregarProducto(@ModelAttribute Producto producto, @RequestParam int cantidad, HttpSession session) {
+    public String agregarProducto(@ModelAttribute Producto producto, @RequestParam int cantidad, HttpSession session, Model model) {
         List<LineaPedido> carrito = (List<LineaPedido>) session.getAttribute("carrito");
         if (carrito == null) {
             carrito = new ArrayList<>();
         }
-
+    
+        String floricultorNuevo = producto.getFloricultor().getEmail();
+        if (!carrito.isEmpty()) {
+            String floricultorActual = carrito.get(0).getProducto().getFloricultor().getEmail();
+            if (!floricultorActual.equals(floricultorNuevo)) {
+                session.setAttribute("errorCarrito", "Este producto pertenece a otro floricultor. Solo puedes añadir productos del mismo floricultor en un pedido.");
+                return "redirect:/producto/" + producto.getIdProducto();
+            }
+        }
+    
+        session.removeAttribute("errorCarrito");
+    
         Optional<LineaPedido> existente = carrito.stream()
                 .filter(lp -> lp.getProducto().getIdProducto().equals(producto.getIdProducto()))
                 .findFirst();
-
+    
         if (existente.isPresent()) {
             LineaPedido lp = existente.get();
             lp.setCantidad(lp.getCantidad() + cantidad);
@@ -45,10 +57,13 @@ public class CarritoController {
             nueva.setPrecioUnitario(producto.getPrecio());
             carrito.add(nueva);
         }
-
+    
         session.setAttribute("carrito", carrito);
-        return "redirect:/carrito/ver";
+        session.setAttribute("mensajeExito", "Producto añadido al carrito correctamente.");
+        return "redirect:/producto/" + producto.getIdProducto();
     }
+    
+    
 
     @GetMapping("/ver")
     public String verCarrito(Model model, HttpSession session, @ModelAttribute("usuario") Object usuario) {
@@ -66,8 +81,10 @@ public class CarritoController {
     @PostMapping("/vaciar")
     public String vaciarCarrito(HttpSession session) {
         session.removeAttribute("carrito");
-        return "redirect:/carrito/ver";
+        return "redirect:/home";
     }
+    
+    
 
     @ModelAttribute("totalCarrito")
     public double getTotalCarrito(HttpSession session) {

@@ -27,15 +27,15 @@ public class RegistroController {
     @GetMapping("/login")
     public String mostrarFormularioLogin(Model model) {
      
-        return "login"; // Muestra la vista de registro
+        return "login"; 
     }
 
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model) {
-        model.addAttribute("tipoUsuario", "cliente"); // Valor por defecto
+        model.addAttribute("tipoUsuario", "cliente"); 
         model.addAttribute("cliente", new Cliente());
         model.addAttribute("floricultor", new Floricultor());
-        return "registro"; // Muestra la vista de registro
+        return "registro";
     }
 
     @PostMapping("/registro")
@@ -49,10 +49,10 @@ public class RegistroController {
             restTemplate.postForObject(url, cliente, Cliente.class);
         } else if ("floricultor".equals(tipoUsuario)) {
             String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/floricultores").toUriString();
-            floricultor.setDisponibilidad(true); // Se establece como disponible por defecto
+            floricultor.setDisponibilidad(true); 
             restTemplate.postForObject(url, floricultor, Floricultor.class);
         }
 
-        return "redirect:/home"; // Redirigir al catálogo después del registro
+        return "redirect:/login";
     }
 }

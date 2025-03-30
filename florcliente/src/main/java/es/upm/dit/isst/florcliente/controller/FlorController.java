@@ -19,9 +19,10 @@ import java.util.List;
 
 import lombok.*;
 
-@Getter @Setter
+@Getter
+@Setter
 @Controller
-@SessionAttributes({"usuario", "rol"})
+@SessionAttributes({ "usuario", "rol" })
 public class FlorController {
 
     private final RestTemplate restTemplate;
@@ -50,12 +51,14 @@ public class FlorController {
             return "redirect:/home";
         } catch (Exception e) {
             try {
-                Floricultor floricultor = restTemplate.getForObject(baseUrl + "/floricultores/" + email, Floricultor.class);
+                Floricultor floricultor = restTemplate.getForObject(baseUrl + "/floricultores/" + email,
+                        Floricultor.class);
                 model.addAttribute("usuario", floricultor);
                 model.addAttribute("rol", "floricultor");
                 return "redirect:/home";
             } catch (Exception ex) {
-                return "redirect:/error"; // Redirigir a una página de error si no se encuentra el usuario
+                model.addAttribute("mensajeError", "No existe un usuario registrado con ese email.");
+                return "login";
             }
         }
     }
@@ -71,68 +74,69 @@ public class FlorController {
         return "home";
     }
 
-  @GetMapping("/cuenta")
-public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAttribute("usuario") Object usuario) {
-    if ("cliente".equals(rol)) {
-        List<Pedido> pedidos = new ArrayList<>();
-        try {
-            ResponseEntity<List<Pedido>> response = restTemplate.exchange(
-                baseUrl + "/pedidos/cliente/" + ((Cliente) usuario).getEmail(),
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Pedido>>() {}
-            );
-            pedidos = response.getBody();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        model.addAttribute("pedidos", pedidos);
-    } else if ("floricultor".equals(rol)) {
-        List<Producto> productos = new ArrayList<>();
-        List<Pedido> pedidosRecibidos = new ArrayList<>();
-        String email = ((Floricultor) usuario).getEmail();
+    @GetMapping("/cuenta")
+    public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAttribute("usuario") Object usuario) {
+        if ("cliente".equals(rol)) {
+            List<Pedido> pedidos = new ArrayList<>();
+            try {
+                ResponseEntity<List<Pedido>> response = restTemplate.exchange(
+                        baseUrl + "/pedidos/cliente/" + ((Cliente) usuario).getEmail(),
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<Pedido>>() {
+                        });
+                pedidos = response.getBody();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            model.addAttribute("pedidos", pedidos);
+        } else if ("floricultor".equals(rol)) {
+            List<Producto> productos = new ArrayList<>();
+            List<Pedido> pedidosRecibidos = new ArrayList<>();
+            String email = ((Floricultor) usuario).getEmail();
 
-        try {
-            ResponseEntity<List<Producto>> response = restTemplate.exchange(
-                baseUrl + "/productos/floricultor/" + email,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Producto>>() {}
-            );
-            productos = response.getBody();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            try {
+                ResponseEntity<List<Producto>> response = restTemplate.exchange(
+                        baseUrl + "/productos/floricultor/" + email,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<Producto>>() {
+                        });
+                productos = response.getBody();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        try {
-            ResponseEntity<List<Pedido>> response = restTemplate.exchange(
-                baseUrl + "/pedidos/floricultor/" + email,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Pedido>>() {}
-            );
-            pedidosRecibidos = response.getBody();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            try {
+                ResponseEntity<List<Pedido>> response = restTemplate.exchange(
+                        baseUrl + "/pedidos/floricultor/" + email,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<Pedido>>() {
+                        });
+                pedidosRecibidos = response.getBody();
+            }catch(
 
-        model.addAttribute("productos", productos);
-        model.addAttribute("pedidosRecibidos", pedidosRecibidos);
+    Exception e)
+    {
+        e.printStackTrace();
     }
 
-    return "cuenta";
-}
+    model.addAttribute("productos",productos);model.addAttribute("pedidosRecibidos",pedidosRecibidos);
+    }
+
+    return"cuenta";}
 
     @GetMapping("/tienda")
     public String mostrarTienda(Model model) {
-    try {
-        List<Producto> productos = restTemplate.getForObject(baseUrl + "/productos", List.class);
-        model.addAttribute("productos", productos);
-    } catch (Exception e) {
-        model.addAttribute("productos", new ArrayList<>());
-    }
+        try {
+            List<Producto> productos = restTemplate.getForObject(baseUrl + "/productos", List.class);
+            model.addAttribute("productos", productos);
+        } catch (Exception e) {
+            model.addAttribute("productos", new ArrayList<>());
+        }
 
-    return "tienda";
+        return "tienda";
     }
 
     @GetMapping("/")
@@ -140,19 +144,30 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
         return "redirect:/home";
     }
 
-
     @GetMapping("/logout")
-    public String cerrarSesion(SessionStatus status,HttpSession session) {
+    public String cerrarSesion(SessionStatus status, HttpSession session) {
         status.setComplete();
         session.invalidate();
         return "redirect:/home";
     }
 
     @GetMapping("/producto/{id}")
-    public String mostrarDetalleProducto(@PathVariable Long id, Model model) {
+    public String mostrarDetalleProducto(@PathVariable Long id, Model model, HttpSession session) {
         try {
             Producto producto = restTemplate.getForObject(baseUrl + "/productos/" + id, Producto.class);
             model.addAttribute("producto", producto);
+
+            String errorCarrito = (String) session.getAttribute("errorCarrito");
+            if (errorCarrito != null) {
+                model.addAttribute("errorCarrito", errorCarrito);
+                session.removeAttribute("errorCarrito");
+            }
+            String mensajeExito = (String) session.getAttribute("mensajeExito");
+            if (mensajeExito != null) {
+                model.addAttribute("mensajeExito", mensajeExito);
+                session.removeAttribute("mensajeExito");
+            }
+
         } catch (Exception e) {
             model.addAttribute("producto", null);
         }
@@ -165,6 +180,7 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
         model.addAttribute("floricultor", floricultor);
         return "formularioProducto";
     }
+
     @PostMapping("/productos/crear/{email}")
     public String crearProducto(@PathVariable String email, @ModelAttribute Producto producto) {
         try {
@@ -172,10 +188,10 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
                     .fromHttpUrl(baseUrl + "/floricultores/" + email)
                     .toUriString();
             Floricultor floricultor = restTemplate.getForObject(urlFloricultor, Floricultor.class);
-    
+
             producto.setFloricultor(floricultor);
-            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor()));
-    
+            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor(), producto.isEsRamo()));
+
             String urlProducto = UriComponentsBuilder
                     .fromHttpUrl(baseUrl + "/productos")
                     .toUriString();
@@ -184,73 +200,89 @@ public String verCuenta(@ModelAttribute("rol") String rol, Model model, @ModelAt
             System.err.println("Error al crear el producto: " + e.getMessage());
             e.printStackTrace();
         }
-    
+
         return "redirect:/cuenta";
     }
-    
 
-    private String asignarImagenPorTipo(String tipo) {
+    private String asignarImagenPorTipo(String tipo, boolean esRamo) {
         tipo = tipo.toLowerCase();
-        return switch (tipo) {
-            case "rosa" -> "/images/rosas.jpg";
-            case "tulipán" -> "/images/tulipanes.jpg";
-            case "girasol" -> "/images/girasoles.jpeg";
-            case "lirio" -> "/images/lirios.jpg";
-            case "margarita" -> "/images/margaritas.jpg";
-            case "peonía", "peonia" -> "/images/peonias.jpg";
-            default -> "/images/floresvarias.webp";
-        };
+    
+        if (esRamo) {
+            return switch (tipo) {
+                case "rosa" -> "/images/ramoRosas.jpg";
+                case "tulipán", "tulipan" -> "/images/ramoTulipanes.jpg";
+                case "girasol" -> "/images/ramoGirasol.jpeg";
+                case "lirio" -> "/images/ramoLirios.jpg";
+                case "margarita" -> "/images/ramoMargaritas.jpg";
+                case "peonía", "peonia" -> "/images/ramoPeonias.jpg";
+                default -> "/images/floresvarias.webp";
+            };
+        } else {
+            return switch (tipo) {
+                case "rosa" -> "/images/rosa.png";
+                case "tulipán", "tulipan" -> "/images/tulipan.png";
+                case "girasol" -> "/images/girasol.png";
+                case "lirio" -> "/images/lirio.png";
+                case "margarita" -> "/images/margarita.png";
+                case "peonía", "peonia" -> "/images/peonia.png";
+                default -> "/images/floresvarias.webp";
+            };
+        }
     }
+    
 
     @GetMapping("/eliminar/{id}")
     public String eliminarProducto(@PathVariable Long id) {
         try {
             restTemplate.delete(baseUrl + "/productos/" + id);
         } catch (Exception e) {
-            // error al eliminar
         }
         return "redirect:/cuenta";
     }
-//Editar producto del inventario
-@GetMapping("/producto/editar/{id}")
-public String mostrarFormularioEditarProducto(@PathVariable Long id, Model model) {
-    try {
-        Producto producto = restTemplate.getForObject(baseUrl + "/productos/" + id, Producto.class);
-        model.addAttribute("producto", producto);
-    } catch (Exception e) {
-        model.addAttribute("producto", null);
+
+    // Editar producto del inventario
+    @GetMapping("/producto/editar/{id}")
+    public String mostrarFormularioEditarProducto(@PathVariable Long id, Model model) {
+        try {
+            Producto producto = restTemplate.getForObject(baseUrl + "/productos/" + id, Producto.class);
+            model.addAttribute("producto", producto);
+        } catch (Exception e) {
+            model.addAttribute("producto", null);
+        }
+        return "formularioProducto";
     }
-    return "formularioProducto";
-}
 
-//Ver detalle del pedido
-@GetMapping("/pedido/{id}")
-public String verDetallePedido(@PathVariable Long id, Model model) {
-    RestTemplate restTemplate = new RestTemplate();
-    String url = "http://localhost:8080/pedidos/" + id;
+    // Ver detalle del pedido
+    @GetMapping("/pedido/{id}")
+    public String verDetallePedido(@PathVariable Long id, Model model) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8080/pedidos/" + id;
 
-    try {
-        ResponseEntity<Pedido> response = restTemplate.getForEntity(url, Pedido.class);
-        Pedido pedido = response.getBody();
-        model.addAttribute("pedido", pedido);
-        return "detallePedido";
-    } catch (Exception e) {
-        e.printStackTrace();
-        return "redirect:/cuenta"; // redirige si hay error
+        try {
+            ResponseEntity<Pedido> response = restTemplate.getForEntity(url, Pedido.class);
+            Pedido pedido = response.getBody();
+            model.addAttribute("pedido", pedido);
+            return "detallePedido";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/cuenta"; // redirige si hay error
+        }
+    }
+
+    @PostMapping("/producto/editar")
+    public String actualizarProducto(@ModelAttribute Producto producto) {
+        try {
+            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor(), producto.isEsRamo()));
+            restTemplate.put(baseUrl + "/productos/" + producto.getIdProducto(), producto);
+        } catch (Exception e) {
+            System.err.println("Error al actualizar el producto: " + e.getMessage());
+        }
+        return "redirect:/cuenta";
+    }
+
+    @GetMapping("/pedido/confirmado")
+    public String mostrarConfirmacion() {
+        return "pedidoConfirmado";
     }
 }
-
-@PostMapping("/producto/editar")
-public String actualizarProducto(@ModelAttribute Producto producto) {
-    try {
-        producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor()));
-        restTemplate.put(baseUrl + "/productos/" + producto.getIdProducto(), producto);
-    } catch (Exception e) {
-        System.err.println("Error al actualizar el producto: " + e.getMessage());
-    }
-    return "redirect:/cuenta";
-}
-}
-
-
 

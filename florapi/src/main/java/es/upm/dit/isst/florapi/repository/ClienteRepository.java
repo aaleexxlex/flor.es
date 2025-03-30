@@ -5,5 +5,5 @@ import es.upm.dit.isst.florapi.model.*;
 import java.util.List;
 
 public interface ClienteRepository extends JpaRepository<Cliente, String> {
-    List<Cliente> findByNombre(String nombre); // Método para buscar clientes por nombre
+    List<Cliente> findByNombre(String nombre);
 }
