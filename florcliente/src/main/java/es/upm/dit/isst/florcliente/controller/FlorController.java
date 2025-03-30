@@ -318,5 +318,37 @@ public class FlorController {
     public String mostrarConfirmacion() {
         return "pedidoConfirmado";
     }
+    @GetMapping("/floricultores")
+public String verFloricultores(Model model) {
+    try {
+        // Obtienes todos los floricultores
+        ResponseEntity<List<Floricultor>> response = restTemplate.exchange(
+            baseUrl + "/floricultores",
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<Floricultor>>() {}
+        );
+
+        List<Floricultor> floricultores = response.getBody();
+
+        // Para cada floricultor, traes sus productos
+        for (Floricultor flor : floricultores) {
+            ResponseEntity<List<Producto>> productosResponse = restTemplate.exchange(
+                baseUrl + "/productos/floricultor/" + flor.getEmail(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Producto>>() {}
+            );
+            flor.setProductos(productosResponse.getBody());
+        }
+
+        model.addAttribute("floricultores", floricultores);
+    } catch (Exception e) {
+        model.addAttribute("floricultores", new ArrayList<>());
+    }
+
+    return "floricultores"; // nombre del HTML
+}
+
 }
 
