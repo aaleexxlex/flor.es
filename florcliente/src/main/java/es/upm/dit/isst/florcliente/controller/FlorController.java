@@ -156,11 +156,15 @@ public class FlorController {
             Producto producto = restTemplate.getForObject(baseUrl + "/productos/" + id, Producto.class);
             model.addAttribute("producto", producto);
     
-            // Solo añadimos el mensaje si existe
             String errorCarrito = (String) session.getAttribute("errorCarrito");
             if (errorCarrito != null) {
                 model.addAttribute("errorCarrito", errorCarrito);
                 session.removeAttribute("errorCarrito"); 
+            }
+            String mensajeExito = (String) session.getAttribute("mensajeExito");
+            if (mensajeExito != null) {
+                model.addAttribute("mensajeExito", mensajeExito);
+                session.removeAttribute("mensajeExito");
             }
     
         } catch (Exception e) {

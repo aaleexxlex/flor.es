@@ -59,6 +59,7 @@ public class CarritoController {
         }
     
         session.setAttribute("carrito", carrito);
+        session.setAttribute("mensajeExito", "Producto añadido al carrito correctamente.");
         return "redirect:/producto/" + producto.getIdProducto();
     }
     

@@ -31,7 +31,9 @@
   <div th:if="${errorCarrito}" class="alert alert-danger text-center mx-auto mt-3" style="max-width: 600px;"
     th:text="${errorCarrito}">
   </div>
-
+  <div th:if="${mensajeExito}" class="alert alert-success text-center mx-auto mt-3" style="max-width: 600px;">
+    <p th:text="${mensajeExito}"></p>
+  </div>
   
   <div class="row">
 
