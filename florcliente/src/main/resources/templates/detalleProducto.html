@@ -2,12 +2,16 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head}">
   <style>
-    .imagen-producto {
-      width: 100%;
-      max-width: 300px;
-      height: auto;
-      object-fit: cover;
-    }
+.imagen-producto {
+  width: 100%;
+  max-width: 350px;
+  height: 350px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
+  background-color: #f8f8f8;
+}
+
 
     .tag-size {
       border: 1px solid #ccc;
@@ -40,23 +44,23 @@
   <div class="row">
 
     <!-- Imagen -->
-    <div class="col-md-4 d-flex justify-content-center align-items-start">
+    <div class="col-md-5 d-flex justify-content-center align-items-start">
       <img th:src="@{${producto.imagen}}" th:alt="'Imagen de ' + ${producto.nombre}"
            class="img-fluid rounded imagen-producto" />
     </div>
 
     <!-- Detalles -->
     <div class="col-md-4">
-      <h4 class="text-center" th:text="${producto.nombre}">Nombre</h4>
-      <p class="text-center" th:text="'Floricultor: ' + ${producto.floricultor.nombre}">Floricultor</p>
-      <div class="text-warning text-center">★★★★★ <span class="text-muted">(8 Reviews)</span></div>
+      <h4 class="text-left" th:text="${producto.nombre}">Nombre</h4>
+      <p class="text-left" th:text="'Floricultor: ' + ${producto.floricultor.nombre}">Floricultor</p>
+      <div class="text-warning text-left">★★★★★ <span class="text-muted">(8 Reviews)</span></div>
 
       <!-- Stock -->
-      <p class="mt-2 text-center" th:if="${producto.cantidad > 0}">
+      <p class="mt-2 text-left" th:if="${producto.cantidad > 0}">
         <span class="text-success">● En stock</span><br>
         <small th:text="'Quedan ' + ${producto.cantidad} + ' unidades disponibles'"></small>
       </p>
-      <p class="text-danger mt-2 text-center" th:if="${producto.cantidad == 0}">
+      <p class="text-danger mt-2 text-left" th:if="${producto.cantidad == 0}">
         ● Sin stock
       </p>
 
@@ -80,7 +84,7 @@
     </div>
 
     <!-- Caja compra -->
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="sidebar-compra">
         <div class="precio mb-2" th:text="${producto.precio} + ' €'">3 €</div>
         <img src="/images/visa_mastercard.png" alt="Métodos de pago" class="mb-3" style="max-width: 100px;">
