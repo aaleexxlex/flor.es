@@ -115,16 +115,17 @@ public class FlorController {
                         new ParameterizedTypeReference<List<Pedido>>() {
                         });
                 pedidosRecibidos = response.getBody();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            }catch(
 
-            model.addAttribute("productos", productos);
-            model.addAttribute("pedidosRecibidos", pedidosRecibidos);
-        }
-
-        return "cuenta";
+    Exception e)
+    {
+        e.printStackTrace();
     }
+
+    model.addAttribute("productos",productos);model.addAttribute("pedidosRecibidos",pedidosRecibidos);
+    }
+
+    return"cuenta";}
 
     @GetMapping("/tienda")
     public String mostrarTienda(Model model) {
@@ -155,24 +156,23 @@ public class FlorController {
         try {
             Producto producto = restTemplate.getForObject(baseUrl + "/productos/" + id, Producto.class);
             model.addAttribute("producto", producto);
-    
+
             String errorCarrito = (String) session.getAttribute("errorCarrito");
             if (errorCarrito != null) {
                 model.addAttribute("errorCarrito", errorCarrito);
-                session.removeAttribute("errorCarrito"); 
+                session.removeAttribute("errorCarrito");
             }
             String mensajeExito = (String) session.getAttribute("mensajeExito");
             if (mensajeExito != null) {
                 model.addAttribute("mensajeExito", mensajeExito);
                 session.removeAttribute("mensajeExito");
             }
-    
+
         } catch (Exception e) {
             model.addAttribute("producto", null);
         }
         return "detalleProducto";
     }
-    
 
     @GetMapping("/productos/nuevo")
     public String mostrarFormularioProducto(@ModelAttribute("usuario") Floricultor floricultor, Model model) {
@@ -190,7 +190,7 @@ public class FlorController {
             Floricultor floricultor = restTemplate.getForObject(urlFloricultor, Floricultor.class);
 
             producto.setFloricultor(floricultor);
-            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor()));
+            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor(), producto.isEsRamo()));
 
             String urlProducto = UriComponentsBuilder
                     .fromHttpUrl(baseUrl + "/productos")
@@ -204,18 +204,32 @@ public class FlorController {
         return "redirect:/cuenta";
     }
 
-    private String asignarImagenPorTipo(String tipo) {
+    private String asignarImagenPorTipo(String tipo, boolean esRamo) {
         tipo = tipo.toLowerCase();
-        return switch (tipo) {
-            case "rosa" -> "/images/rosas.jpg";
-            case "tulipán" -> "/images/tulipanes.jpg";
-            case "girasol" -> "/images/girasoles.jpeg";
-            case "lirio" -> "/images/lirios.jpg";
-            case "margarita" -> "/images/margaritas.jpg";
-            case "peonía", "peonia" -> "/images/peonias.jpg";
-            default -> "/images/floresvarias.webp";
-        };
+    
+        if (esRamo) {
+            return switch (tipo) {
+                case "rosa" -> "/images/ramoRosas.jpg";
+                case "tulipán", "tulipan" -> "/images/ramoTulipanes.jpg";
+                case "girasol" -> "/images/ramoGirasol.jpeg";
+                case "lirio" -> "/images/ramoLirios.jpg";
+                case "margarita" -> "/images/ramoMargaritas.jpg";
+                case "peonía", "peonia" -> "/images/ramoPeonias.jpg";
+                default -> "/images/floresvarias.webp";
+            };
+        } else {
+            return switch (tipo) {
+                case "rosa" -> "/images/rosa.png";
+                case "tulipán", "tulipan" -> "/images/tulipan.png";
+                case "girasol" -> "/images/girasol.png";
+                case "lirio" -> "/images/lirio.png";
+                case "margarita" -> "/images/margarita.png";
+                case "peonía", "peonia" -> "/images/peonia.png";
+                default -> "/images/floresvarias.webp";
+            };
+        }
     }
+    
 
     @GetMapping("/eliminar/{id}")
     public String eliminarProducto(@PathVariable Long id) {
@@ -258,7 +272,7 @@ public class FlorController {
     @PostMapping("/producto/editar")
     public String actualizarProducto(@ModelAttribute Producto producto) {
         try {
-            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor()));
+            producto.setImagen(asignarImagenPorTipo(producto.getTipoFlor(), producto.isEsRamo()));
             restTemplate.put(baseUrl + "/productos/" + producto.getIdProducto(), producto);
         } catch (Exception e) {
             System.err.println("Error al actualizar el producto: " + e.getMessage());
@@ -270,5 +284,5 @@ public class FlorController {
     public String mostrarConfirmacion() {
         return "pedidoConfirmado";
     }
-
 }
+

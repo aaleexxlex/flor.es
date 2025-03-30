@@ -16,6 +16,8 @@ public class Producto {
     private double precio;
     private int cantidad;
     private String imagen;
+    private boolean esRamo;
+
 
     private Floricultor floricultor;
 }

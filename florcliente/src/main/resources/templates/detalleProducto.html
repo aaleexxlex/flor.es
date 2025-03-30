@@ -1,45 +1,48 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: head}">
-    <style>
-        .imagen-producto {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
-            object-fit: cover;
-        }
+  <style>
+    .imagen-producto {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      object-fit: cover;
+    }
 
-        .tag-size {
-            border: 1px solid #ccc;
-            padding: 5px 10px;
-            margin: 5px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    .tag-size {
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-        .tag-size.active {
-            background-color: #f06292;
-            color: white;
-        }
-    </style>
+    .tag-size.active {
+      background-color: #f06292;
+      color: white;
+    }
+  </style>
 </head>
 <body>
 
 <header th:replace="~{fragments/navbar :: navbar}"></header>
 
 <div class="container-fluid px-5 my-5">
+
+  <!-- Mensajes -->
   <div th:if="${errorCarrito}" class="alert alert-danger text-center mx-auto mt-3" style="max-width: 600px;"
-    th:text="${errorCarrito}">
+       th:text="${errorCarrito}">
   </div>
   <div th:if="${mensajeExito}" class="alert alert-success text-center mx-auto mt-3" style="max-width: 600px;">
     <p th:text="${mensajeExito}"></p>
   </div>
-  
+
   <div class="row">
 
-    <!-- Imagen producto -->
+    <!-- Imagen -->
     <div class="col-md-4 d-flex justify-content-center align-items-start">
-      <img th:src="@{${producto.imagen}}" th:alt="'Imagen de ' + ${producto.nombre}" class="img-fluid rounded imagen-producto" />
+      <img th:src="@{${producto.imagen}}" th:alt="'Imagen de ' + ${producto.nombre}"
+           class="img-fluid rounded imagen-producto" />
     </div>
 
     <!-- Detalles -->
@@ -47,7 +50,15 @@
       <h4 class="text-center" th:text="${producto.nombre}">Nombre</h4>
       <p class="text-center" th:text="'Floricultor: ' + ${producto.floricultor.nombre}">Floricultor</p>
       <div class="text-warning text-center">★★★★★ <span class="text-muted">(8 Reviews)</span></div>
-      <p class="info-verde mt-2 text-center">● En stock</p>
+
+      <!-- Stock -->
+      <p class="mt-2 text-center" th:if="${producto.cantidad > 0}">
+        <span class="text-success">● En stock</span><br>
+        <small th:text="'Quedan ' + ${producto.cantidad} + ' unidades disponibles'"></small>
+      </p>
+      <p class="text-danger mt-2 text-center" th:if="${producto.cantidad == 0}">
+        ● Sin stock
+      </p>
 
       <div class="border p-3 rounded my-3 bg-light">
         <strong>Gana un 5% de descuento por hacerte miembro</strong><br/>
@@ -74,20 +85,32 @@
     <!-- Caja compra -->
     <div class="col-md-4">
       <div class="sidebar-compra">
-        <div class="precio mb-2" th:text="${producto.precio} + ' €'">3 €</div>  
+        <div class="precio mb-2" th:text="${producto.precio} + ' €'">3 €</div>
         <img src="/images/visa_mastercard.png" alt="Métodos de pago" class="mb-3" style="max-width: 100px;">
 
         <!-- Tamaños -->
-        <label class="form-label">Tamaño:</label>
-        <div class="d-flex flex-wrap mb-3">
-          <div class="tag-size active" data-cantidad="1">1 flor</div>
-          <div class="tag-size" data-cantidad="6">6 flores</div>
-          <div class="tag-size" data-cantidad="12">12 flores</div>
-          <div class="tag-size" data-cantidad="24">24 flores</div>
+        <div th:if="${!producto.esRamo}">
+          <label class="form-label">Tamaño:</label>
+          <div class="d-flex flex-wrap mb-3">
+            <div class="tag-size active" data-cantidad="1">1 flor</div>
+            <div class="tag-size" data-cantidad="6">6 flores</div>
+            <div class="tag-size" data-cantidad="12">12 flores</div>
+            <div class="tag-size" data-cantidad="24">24 flores</div>
+          </div>
         </div>
 
-        <!-- Formulario de compra -->
-        <form th:action="@{/carrito/agregar}" method="post">
+        <div th:if="${producto.esRamo}">
+          <label class="form-label">Tamaño:</label>
+          <div class="d-flex flex-wrap mb-3">
+            <div class="tag-size active" data-cantidad="1">1 ramo</div>
+            <div class="tag-size" data-cantidad="3">3 ramos</div>
+            <div class="tag-size" data-cantidad="6">6 ramos</div>
+            <div class="tag-size" data-cantidad="12">12 ramos</div>
+          </div>
+        </div>
+
+        <!-- Formulario de compra si hay stock -->
+        <form th:if="${producto.cantidad > 0}" th:action="@{/carrito/agregar}" method="post">
           <input type="hidden" name="idProducto" th:value="${producto.idProducto}" />
           <input type="hidden" name="nombre" th:value="${producto.nombre}" />
           <input type="hidden" name="tipoFlor" th:value="${producto.tipoFlor}" />
@@ -98,24 +121,29 @@
           <input type="hidden" name="floricultor.email" th:value="${producto.floricultor.email}" />
           <input type="hidden" name="floricultor.ubicacion" th:value="${producto.floricultor.ubicacion}" />
 
-
           <label class="form-label">Cantidad</label>
           <div class="input-group mb-3" style="width: 120px;">
             <button type="button" class="btn btn-outline-secondary" id="restar">-</button>
-            <input type="number" class="form-control text-center" value="1" min="1" id="cantidad">
+            <input type="number" class="form-control text-center"
+                   value="1" min="1" th:attr="max=${producto.cantidad}" id="cantidad">
             <button type="button" class="btn btn-outline-secondary" id="sumar">+</button>
           </div>
 
           <button type="submit" class="btn btn-principal w-100">Añadir al carrito</button>
         </form>
 
-        <!-- Envío -->
+        <!-- Si no hay stock -->
+        <div th:if="${producto.cantidad == 0}" class="text-center mt-4">
+          <button class="btn btn-secondary w-100" disabled>No disponible</button>
+          <p class="text-muted mt-2">Este producto está agotado.</p>
+        </div>
+
         <p class="mt-3 text-muted small">
-          📦 Enviado desde Madrid, <span th:text="${producto.floricultor.nombre}">Floricultor</span>
+          📦 Enviado desde <span th:text="${producto.floricultor.ubicacion}">ubicación</span>,
+          <span th:text="${producto.floricultor.nombre}">Floricultor</span>
         </p>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -132,30 +160,42 @@
     inputHidden.value = inputCantidad.value;
   }
 
-  btnSumar.addEventListener('click', () => {
-    inputCantidad.value = parseInt(inputCantidad.value) + 1;
-    actualizarHidden();
-  });
+  if (btnSumar && btnRestar && inputCantidad) {
+    btnSumar.addEventListener('click', () => {
+      const max = parseInt(inputCantidad.getAttribute("max"));
+      const actual = parseInt(inputCantidad.value);
+      if (actual < max) {
+        inputCantidad.value = actual + 1;
+        actualizarHidden();
+      }
+    });
 
-  btnRestar.addEventListener('click', () => {
-    const actual = parseInt(inputCantidad.value);
-    if (actual > 1) {
-      inputCantidad.value = actual - 1;
-      actualizarHidden();
-    }
-  });
+    btnRestar.addEventListener('click', () => {
+      const actual = parseInt(inputCantidad.value);
+      if (actual > 1) {
+        inputCantidad.value = actual - 1;
+        actualizarHidden();
+      }
+    });
 
-  inputCantidad.addEventListener('input', actualizarHidden);
-
-  sizeButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      sizeButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const cantidad = btn.getAttribute('data-cantidad');
-      inputCantidad.value = cantidad;
+    inputCantidad.addEventListener('input', () => {
+      const max = parseInt(inputCantidad.getAttribute("max"));
+      if (parseInt(inputCantidad.value) > max) {
+        inputCantidad.value = max;
+      }
       actualizarHidden();
     });
-  });
+
+    sizeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sizeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cantidad = btn.getAttribute('data-cantidad');
+        inputCantidad.value = cantidad;
+        actualizarHidden();
+      });
+    });
+  }
 </script>
 
 </body>

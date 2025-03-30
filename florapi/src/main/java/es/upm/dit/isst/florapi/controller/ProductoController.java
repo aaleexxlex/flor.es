@@ -61,6 +61,10 @@ public class ProductoController {
     public List<Producto> getProductosPorTipo(@PathVariable String tipoFlor) {
         return productoRepository.findByTipoFlorIgnoreCase(tipoFlor);
     }
+    @GetMapping("/ramos")
+    public List<Producto> getRamos() {
+        return productoRepository.findByEsRamoTrue();
+    }
 
     @PatchMapping("/{idProducto}")
     public ResponseEntity<Producto> partialUpdateProducto(@PathVariable Long idProducto, @RequestBody Producto partialProducto) {
