@@ -25,6 +25,8 @@ public class Producto {
     private double precio;
     private int cantidad;
     private String imagen;
+    private boolean esRamo;
+
 
     @ManyToOne
     @JoinColumn(name = "email_floricultor")
