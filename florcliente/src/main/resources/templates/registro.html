@@ -7,12 +7,15 @@
 <header th:replace="fragments/navbar :: navbar"></header>
 
 <!-- REGISTRO -->
-<main class="flex-grow-1 bg-cover d-flex justify-content-center align-items-center" 
+<main class="flex-grow-1 bg-cover d-flex justify-content-center align-items-center py-5" 
       style="background-image: url('/images/fondo-flores.jpg'); background-size: cover; background-position: center;">
 
-    <div class="card text-center shadow-lg p-4" style="width: 450px; background-color: rgba(255, 255, 255, 0.95);">
+      <div class="card text-center shadow-lg p-4 w-100" style="max-width: 400px; background-color: rgba(255,255,255,0.95);">
+
         <img src="/images/logo-solo.png" alt="Logo" class="mx-auto" style="height: 100px;">
         <h5 class="my-3">Registro de Usuario</h5>
+        
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
         <form th:action="@{/registro}" method="post">
             <input type="text" name="nombre" class="form-control mb-3" placeholder="Nombre" required>
