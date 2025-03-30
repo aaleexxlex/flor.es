@@ -24,11 +24,11 @@ public class CategoriaController {
     public String filtrarPorFlor(@PathVariable String tipoFlor, Model model) {
         try {
             ResponseEntity<List<Producto>> response = restTemplate.exchange(
-                baseUrl + "/productos",  // endpoint que devuelve todos los productos
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Producto>>() {}
-            );
+                    baseUrl + "/productos", // endpoint que devuelve todos los productos
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Producto>>() {
+                    });
 
             List<Producto> todos = response.getBody();
             if (todos != null) {
@@ -51,6 +51,7 @@ public class CategoriaController {
 
         return "productosPorCategoria"; // Cambia a la vista que desees
     }
+
     private String obtenerNombrePlural(String tipoFlor) {
         return switch (tipoFlor.toLowerCase()) {
             case "rosa" -> "Rosas";
@@ -62,5 +63,32 @@ public class CategoriaController {
             default -> tipoFlor.substring(0, 1).toUpperCase() + tipoFlor.substring(1) + "s";
         };
     }
-    
+
+    @GetMapping("/ramos")
+    public String mostrarRamos(Model model) {
+        try {
+            ResponseEntity<List<Producto>> response = restTemplate.exchange(
+                    baseUrl + "/productos",
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Producto>>() {
+                    });
+
+            List<Producto> productos = response.getBody();
+            List<Producto> ramos = productos.stream()
+                    .filter(Producto::isEsRamo)
+                    .toList();
+
+            model.addAttribute("productos", ramos);
+            model.addAttribute("tituloCategoria", "Ramos");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("productos", new ArrayList<>());
+            model.addAttribute("tituloCategoria", "Ramos");
+        }
+
+        return "productosPorCategoria";
+    }
+
 }

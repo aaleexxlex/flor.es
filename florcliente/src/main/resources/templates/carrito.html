@@ -193,7 +193,7 @@
       .then(() => fetch("/carrito/vaciar", { method: "POST" }))
       .then(() => window.location.href = "/pedido/confirmado")
       .catch(err => {
-        mostrarError("Hubo un problema al procesar tu pedido: " + err.message);
+        mostrarError("Hubo un problema al procesar tu pedido, debes iniciar sesion como cliente: " + err.message);
       });
   });
 </script>
