@@ -49,9 +49,13 @@
   <div class="col-md-3">
     <div class="card p-3">
 
-      <!-- ✅ Mensaje de error en checkout -->
+      <!-- ✅ Mensajes de error -->
       <div id="errorCheckout" class="alert alert-danger text-center d-none">
         Todos los productos del carrito deben ser del mismo floricultor.
+      </div>
+      <div id="errorCampos" class="alert alert-danger text-center d-none mt-2"></div>
+      <div id="mensajeSesion" class="alert alert-warning text-center d-none mt-2">
+        Debes iniciar sesión para completar tu pedido. Redirigiendo...
       </div>
 
       <h5>Datos</h5>
@@ -92,79 +96,81 @@
 
 <!-- SCRIPT DE CHECKOUT -->
 <script>
-document.getElementById("checkoutBtn").addEventListener("click", function () {
-  const pais = document.querySelector("input[name='pais']").value.trim();
-  const ciudad = document.querySelector("input[name='ciudad']").value.trim();
-  const cp = document.querySelector("input[name='codigoPostal']").value.trim();
-
-  if (!pais || !ciudad || !cp) {
-    alert("Por favor, completa todos los campos de dirección.");
-    return;
+  function mostrarError(mensaje) {
+    const errorDiv = document.getElementById("errorCampos");
+    errorDiv.textContent = mensaje;
+    errorDiv.classList.remove("d-none");
   }
-
-  const destino = `${pais}, ${ciudad}, ${cp}`;
-  const emailCliente = this.dataset.emailCliente;
-  const productos = Array.from(document.querySelectorAll(".producto-carrito"));
-
-  if (productos.length === 0) {
-    alert("El carrito está vacío.");
-    return;
-  }
-
-  const emailFloricultor = productos[0].dataset.emailFloricultor;
-  if (!emailCliente || emailCliente === "anonimo") {
-    alert("Debes iniciar sesión para completar tu pedido.");
-    window.location.href = "/login";
-    return;
-  }
-
-  //Validación: todos del mismo floricultor
-  const mismoFloricultor = productos.every(prod =>
-    prod.dataset.emailFloricultor === emailFloricultor
-  );
-  if (!mismoFloricultor) {
-    document.getElementById("errorCheckout").classList.remove("d-none");
-    return;
-  }
-
-  const lineasPedido = productos.map(prod => {
-    return {
-      producto: { idProducto: parseInt(prod.dataset.idProducto) },
-      cantidad: parseInt(prod.querySelector(".cantidad").value),
-      precioUnitario: parseFloat(prod.dataset.precio)
+  
+  document.getElementById("checkoutBtn").addEventListener("click", function () {
+    const pais = document.querySelector("input[name='pais']").value.trim();
+    const ciudad = document.querySelector("input[name='ciudad']").value.trim();
+    const cp = document.querySelector("input[name='codigoPostal']").value.trim();
+  
+    if (!pais || !ciudad || !cp) {
+      mostrarError("Por favor, completa todos los campos de dirección.");
+      return;
+    }
+  
+    const destino = `${pais}, ${ciudad}, ${cp}`;
+    const emailCliente = this.dataset.emailCliente;
+    const productos = Array.from(document.querySelectorAll(".producto-carrito"));
+  
+    if (productos.length === 0) {
+      mostrarError("El carrito está vacío.");
+      return;
+    }
+  
+    const emailFloricultor = productos[0].dataset.emailFloricultor;
+    if (!emailCliente || emailCliente === "anonimo") {
+      const aviso = document.getElementById("mensajeSesion");
+      aviso.classList.remove("d-none");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2500);
+      return;
+    }
+  
+    const mismoFloricultor = productos.every(prod =>
+      prod.dataset.emailFloricultor === emailFloricultor
+    );
+    if (!mismoFloricultor) {
+      document.getElementById("errorCheckout").classList.remove("d-none");
+      return;
+    }
+  
+    const lineasPedido = productos.map(prod => {
+      return {
+        producto: { idProducto: parseInt(prod.dataset.idProducto) },
+        cantidad: parseInt(prod.querySelector(".cantidad").value),
+        precioUnitario: parseFloat(prod.dataset.precio)
+      };
+    });
+  
+    const pedido = {
+      cliente: { email: emailCliente },
+      floricultor: { email: emailFloricultor },
+      estado: "PENDIENTE",
+      destino: destino,
+      lineasPedido: lineasPedido
     };
+  
+    fetch("http://localhost:8080/pedidos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(pedido)
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Error al crear el pedido.");
+      return res.json();
+    })
+    .then(() => fetch("/carrito/vaciar", { method: "POST" }))
+    .then(() => window.location.href = "/pedido/confirmado")
+    .catch(err => {
+      mostrarError("Hubo un problema al procesar tu pedido: " + err.message);
+    });
   });
-
-  const pedido = {
-    cliente: { email: emailCliente },
-    floricultor: { email: emailFloricultor },
-    estado: "PENDIENTE",
-    destino: destino,
-    lineasPedido: lineasPedido
-  };
-
-  fetch("http://localhost:8080/pedidos", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(pedido)
-  })
-  .then(res => {
-    if (!res.ok) throw new Error("Error al crear el pedido.");
-    return res.json();
-  })
-  .then(() => {
-    return fetch("/carrito/vaciar", { method: "POST" });
-  })
-  .then(() => {
-    window.location.href = "/pedido/confirmado";
-  })
-  .catch(err => {
-    alert("Hubo un problema al procesar tu pedido: " + err.message);
-  });
-});
-</script>
-
-</body>
-</html>
+  </script>
+  
