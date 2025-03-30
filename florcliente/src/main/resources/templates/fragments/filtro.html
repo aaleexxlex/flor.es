@@ -23,14 +23,22 @@
   
   
         <!-- Origen -->
-        <div class="col-md-3">
-          <label for="origen" class="form-label fw-semibold">Origen</label>
-          <select class="form-select rounded-pill border-rosita" name="origen" id="origen">
-            <option value="" th:selected="${origen == null or origen == ''}">Todos</option>
-            <option value="nacional" th:selected="${origen == 'nacional'}">Nacional</option>
-            <option value="internacional" th:selected="${origen == 'internacional'}">Internacional</option>
-          </select>
-        </div>
+<div class="col-md-3">
+    <label for="origen" class="form-label fw-semibold">Origen</label>
+    <select class="form-select rounded-pill border-rosita" name="origen" id="origen">
+      <option value="" th:selected="${origen == null or origen == ''}">Todos</option>
+      <option value="Madrid" th:selected="${origen == 'Madrid'}">Madrid</option>
+      <option value="Barcelona" th:selected="${origen == 'Barcelona'}">Barcelona</option>
+      <option value="Valencia" th:selected="${origen == 'Valencia'}">Valencia</option>
+      <option value="Sevilla" th:selected="${origen == 'Sevilla'}">Sevilla</option>
+      <option value="Zaragoza" th:selected="${origen == 'Zaragoza'}">Zaragoza</option>
+      <option value="Málaga" th:selected="${origen == 'Málaga'}">Málaga</option>
+      <option value="Bilbao" th:selected="${origen == 'Bilbao'}">Bilbao</option>
+      <option value="Alicante" th:selected="${origen == 'Alicante'}">Alicante</option>
+      <option value="Valladolid" th:selected="${origen == 'Valladolid'}">Valladolid</option>
+      <option value="Murcia" th:selected="${origen == 'Murcia'}">Murcia</option>
+    </select>
+  </div>
   
         <!-- Rango de precio con estilo -->
         <div class="col-md-4">
@@ -55,11 +63,24 @@
   
           </div>
         </div>
+        <!-- Disponible -->
+<div class="col-md-2">
+    <label class="form-label fw-semibold">Disponibilidad</label>
+    <div class="form-check mt-2">
+      <input class="form-check-input border-rosita" type="checkbox" name="disponible" id="disponible"
+             th:checked="${disponible != null}">
+      <label class="form-check-label" for="disponible">
+        Solo disponibles
+      </label>
+    </div>
+  </div>
   
-        <!-- Botón -->
-        <div class="col-md-2 text-end">
-          <button type="submit" class="btn btn-principal w-100 rounded-pill">Aplicar filtros</button>
-        </div>
+<!-- Botón centrado -->
+<div class="col-12 text-center mt-3 pt-5">
+    <button type="submit" class="btn btn-principal px-5 ">Aplicar filtros</button>
+    <a th:href="@{${filtroAction}}" class="btn btn-outline-secondary px-5 mx-3 ">Quitar filtros</a>
+  </div>
+  
   
       </div>
     </form>

@@ -128,16 +128,50 @@ public class FlorController {
     return"cuenta";}
 
     @GetMapping("/tienda")
-    public String mostrarTienda(Model model) {
+    public String mostrarTienda(
+        @RequestParam(required = false) String color,
+        @RequestParam(required = false) String origen,
+        @RequestParam(required = false) Double precioMin,
+        @RequestParam(required = false) Double precioMax,
+        @RequestParam(required = false) Boolean disponible,
+        Model model
+    ) {
         try {
-            List<Producto> productos = restTemplate.getForObject(baseUrl + "/productos", List.class);
+            ResponseEntity<List<Producto>> response = restTemplate.exchange(
+                baseUrl + "/productos",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Producto>>() {}
+            );
+    
+            List<Producto> productos = response.getBody();
+    
+            if (productos != null) {
+                productos = productos.stream()
+                    .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
+                    .filter(p -> origen == null || origen.isEmpty() || 
+                                 (origen.equalsIgnoreCase("Madrid") && p.getFloricultor().getUbicacion().equalsIgnoreCase("Madrid")) ||
+                                 (origen.equalsIgnoreCase("Barcelona") && p.getFloricultor().getUbicacion().equalsIgnoreCase("Barcelona")))
+                    .filter(p -> (precioMin == null || p.getPrecio() >= precioMin) &&
+                                 (precioMax == null || p.getPrecio() <= precioMax))
+                    .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
+                    .toList();
+            }
+    
             model.addAttribute("productos", productos);
+            model.addAttribute("color", color);
+            model.addAttribute("origen", origen);
+            model.addAttribute("precioMin", precioMin);
+            model.addAttribute("precioMax", precioMax);
+            model.addAttribute("disponible", disponible);
+    
         } catch (Exception e) {
             model.addAttribute("productos", new ArrayList<>());
         }
-
+    
         return "tienda";
     }
+    
 
     @GetMapping("/")
     public String redirigirRaiz() {

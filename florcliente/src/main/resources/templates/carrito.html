@@ -20,8 +20,14 @@
         class="card mb-3 p-3 d-flex flex-row justify-content-between align-items-center producto-carrito" th:attr="data-id-producto=${linea.producto.idProducto},
          data-precio=${linea.precioUnitario},
          data-email-floricultor=${linea.producto.floricultor.email},
+         data-ciudad-floricultor=${linea.producto.floricultor.ubicacion},
          data-stock=${linea.producto.cantidad}">
         <div class="d-flex align-items-center">
+           <!-- Botón eliminar -->
+    <form method="post" th:action="@{/carrito/eliminar}">
+      <input type="hidden" name="idProducto" th:value="${linea.producto.idProducto}" />
+      <button class="btn btn-link text-danger me-2" style="font-size: 1.2rem;" title="Quitar del carrito">×</button>
+    </form>
           <img th:src="@{${linea.producto.imagen}}" th:alt="${linea.producto.nombre}" class="img-thumbnail"
             style="width: 100px;">
           <div class="ms-3">
@@ -156,6 +162,12 @@
         }, 2500);
         return;
       }
+      const ciudadFloricultor = productos[0].dataset.ciudadFloricultor;
+
+      if (ciudadFloricultor !== ciudad) {
+      mostrarError(`Solo puedes comprar productos de floricultores que operen en la ciudad que has elegido. El floricultor está en ${ciudadFloricultor}.`);
+      return;
+    }
 
       const mismoFloricultor = productos.every(prod =>
         prod.dataset.emailFloricultor === emailFloricultor

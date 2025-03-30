@@ -83,6 +83,15 @@ public class CarritoController {
         session.removeAttribute("carrito");
         return "redirect:/home";
     }
+    @PostMapping("/eliminar")
+    public String eliminarDelCarrito(@RequestParam Long idProducto, HttpSession session) {
+    List<LineaPedido> carrito = (List<LineaPedido>) session.getAttribute("carrito");
+    if (carrito != null) {
+        carrito.removeIf(lp -> lp.getProducto().getIdProducto().equals(idProducto));
+    }
+    return "redirect:/carrito/ver";
+    }
+
     
     
 
