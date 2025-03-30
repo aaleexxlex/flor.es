@@ -7,16 +7,16 @@ import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 public class Pedido {
     @EqualsAndHashCode.Include
-    @Id 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPedido;
 
@@ -26,25 +26,27 @@ public class Pedido {
     @ToString.Include
     private String estado;
     private String destino;
-    
+
     @ManyToOne
-    @JoinColumn(name = "email_cliente")  // Relación con Cliente
+    @JoinColumn(name = "email_cliente") // Relación con Cliente
     private Cliente cliente;
-    
+
     @ManyToOne
-    @JoinColumn(name = "email_floricultor")  // Relación con Floricultor
+    @JoinColumn(name = "email_floricultor") // Relación con Floricultor
     private Floricultor floricultor;
-    
-    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
+
+    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("pedido")
     private Valoracion valoracion;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("pedido")
     private List<LineaPedido> lineasPedido;
-    
+
     // Getters y Setters
     public double getTotal() {
-        if (lineasPedido == null) return 0;
+        if (lineasPedido == null)
+            return 0;
 
         return lineasPedido.stream()
                 .mapToDouble(det -> det.getCantidad() * det.getPrecioUnitario())

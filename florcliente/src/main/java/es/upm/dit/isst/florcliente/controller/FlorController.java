@@ -115,17 +115,18 @@ public class FlorController {
                         new ParameterizedTypeReference<List<Pedido>>() {
                         });
                 pedidosRecibidos = response.getBody();
-            }catch(
+            } catch (
 
-    Exception e)
-    {
-        e.printStackTrace();
+            Exception e) {
+                e.printStackTrace();
+            }
+
+            model.addAttribute("productos", productos);
+            model.addAttribute("pedidosRecibidos", pedidosRecibidos);
+        }
+
+        return "cuenta";
     }
-
-    model.addAttribute("productos",productos);model.addAttribute("pedidosRecibidos",pedidosRecibidos);
-    }
-
-    return"cuenta";}
 
     @GetMapping("/tienda")
     public String mostrarTienda(Model model) {
@@ -157,11 +158,22 @@ public class FlorController {
             Producto producto = restTemplate.getForObject(baseUrl + "/productos/" + id, Producto.class);
             model.addAttribute("producto", producto);
 
+            // Obtener número de valoraciones
+            Long numValoraciones = restTemplate.getForObject(
+                    baseUrl + "/valoraciones/producto/" + id + "/count",
+                    Long.class);
+            model.addAttribute("numValoraciones", numValoraciones);
+            Double mediaValoraciones = restTemplate.getForObject(
+                    baseUrl + "/valoraciones/producto/" + id + "/media",
+                    Double.class);
+            model.addAttribute("mediaValoraciones", mediaValoraciones);
+
             String errorCarrito = (String) session.getAttribute("errorCarrito");
             if (errorCarrito != null) {
                 model.addAttribute("errorCarrito", errorCarrito);
                 session.removeAttribute("errorCarrito");
             }
+
             String mensajeExito = (String) session.getAttribute("mensajeExito");
             if (mensajeExito != null) {
                 model.addAttribute("mensajeExito", mensajeExito);
@@ -206,7 +218,7 @@ public class FlorController {
 
     private String asignarImagenPorTipo(String tipo, boolean esRamo) {
         tipo = tipo.toLowerCase();
-    
+
         if (esRamo) {
             return switch (tipo) {
                 case "rosa" -> "/images/ramoRosas.jpg";
@@ -229,7 +241,6 @@ public class FlorController {
             };
         }
     }
-    
 
     @GetMapping("/eliminar/{id}")
     public String eliminarProducto(@PathVariable Long id) {
@@ -254,18 +265,17 @@ public class FlorController {
 
     // Ver detalle del pedido
     @GetMapping("/pedido/{id}")
-    public String verDetallePedido(@PathVariable Long id, Model model) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/pedidos/" + id;
-
+    public String verDetallePedido(@PathVariable Long id, Model model,
+            @ModelAttribute("rol") String rol) {
         try {
-            ResponseEntity<Pedido> response = restTemplate.getForEntity(url, Pedido.class);
+            ResponseEntity<Pedido> response = restTemplate.getForEntity(baseUrl + "/pedidos/" + id, Pedido.class);
             Pedido pedido = response.getBody();
             model.addAttribute("pedido", pedido);
+            model.addAttribute("rol", rol);
             return "detallePedido";
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/cuenta"; // redirige si hay error
+            return "redirect:/cuenta";
         }
     }
 
@@ -285,4 +295,3 @@ public class FlorController {
         return "pedidoConfirmado";
     }
 }
-

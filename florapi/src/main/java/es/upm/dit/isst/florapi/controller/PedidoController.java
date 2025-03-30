@@ -12,14 +12,12 @@ import es.upm.dit.isst.florapi.model.LineaPedido;
 import es.upm.dit.isst.florapi.model.Producto;
 import es.upm.dit.isst.florapi.repository.ProductoRepository;
 
-
 @RestController
 @RequestMapping("/pedidos")
 public class PedidoController {
 
     private final PedidoRepository pedidoRepository;
     private final ProductoRepository productoRepository;
-
 
     public PedidoController(PedidoRepository pedidoRepository, ProductoRepository productoRepository) {
         this.pedidoRepository = pedidoRepository;
@@ -35,10 +33,10 @@ public class PedidoController {
     // Get a pedido by ID
     @GetMapping("/{id}")
     public ResponseEntity<Pedido> getPedidoById(@PathVariable Long id) {
-        Optional<Pedido> pedido = pedidoRepository.findById(id);
+        Optional<Pedido> pedido = pedidoRepository.findByIdConValoracion(id);
         return pedido.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-    
+
     @PostMapping
     public ResponseEntity<?> createPedido(@RequestBody Pedido pedido) {
         if (pedido.getCliente() == null) {
@@ -50,27 +48,28 @@ public class PedidoController {
         if (pedido.getLineasPedido() == null || pedido.getLineasPedido().isEmpty()) {
             return ResponseEntity.badRequest().body("El pedido debe contener al menos una línea.");
         }
-    
+
         // Asociar cada LineaPedido con el Pedido actual
         for (LineaPedido lp : pedido.getLineasPedido()) {
             Producto producto = lp.getProducto();
             if (producto == null || producto.getIdProducto() == null) {
                 return ResponseEntity.badRequest().body("Cada línea debe contener un producto válido.");
             }
-    
+
             Producto productoBD = productoRepository.findById(producto.getIdProducto()).orElse(null);
             if (productoBD == null) {
                 return ResponseEntity.badRequest().body("Producto no encontrado: ID " + producto.getIdProducto());
             }
-    
+
             if (productoBD.getCantidad() < lp.getCantidad()) {
-                return ResponseEntity.badRequest().body("Stock insuficiente para el producto: " + productoBD.getNombre());
+                return ResponseEntity.badRequest()
+                        .body("Stock insuficiente para el producto: " + productoBD.getNombre());
             }
-    
+
             // Reducimos el stock
             productoBD.setCantidad(productoBD.getCantidad() - lp.getCantidad());
             productoRepository.save(productoBD);
-    
+
             // Aseguramos que la línea esté enlazada al producto y pedido correcto
             lp.setProducto(productoBD);
             lp.setPedido(pedido);
@@ -78,7 +77,7 @@ public class PedidoController {
         Pedido nuevo = pedidoRepository.save(pedido);
         return ResponseEntity.ok(nuevo);
     }
-    
+
     // Get pedidos by cliente email
     // This method retrieves all pedidos associated with a specific cliente email.
     @GetMapping("/cliente/{email}")
@@ -87,12 +86,38 @@ public class PedidoController {
     }
 
     // Get pedidos by floricultor email
-    // This method retrieves all pedidos associated with a specific floricultor email.
     @GetMapping("/floricultor/{email}")
     public List<Pedido> getPedidosPorFloricultor(@PathVariable String email) {
         return pedidoRepository.findByFloricultorEmail(email); // o como se llame tu método
     }
 
+    // Floricultor marca el pedido como ENVIADO
+    @PostMapping("/{id}/enviar")
+    public ResponseEntity<?> marcarComoEnviado(@PathVariable Long id) {
+        Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
+        if (!optionalPedido.isPresent()) {
+            return ResponseEntity.badRequest().body("Pedido no encontrado con ID " + id);
+        }
+
+        Pedido pedido = optionalPedido.get();
+        pedido.setEstado("ENVIADO");
+        pedidoRepository.save(pedido);
+        return ResponseEntity.ok("Pedido marcado como ENVIADO");
+    }
+
+    // Cliente marca el pedido como COMPLETADO (recibido)
+    @PostMapping("/{id}/completar")
+    public ResponseEntity<?> marcarComoCompletado(@PathVariable Long id) {
+        Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
+        if (!optionalPedido.isPresent()) {
+            return ResponseEntity.badRequest().body("Pedido no encontrado con ID " + id);
+        }
+
+        Pedido pedido = optionalPedido.get();
+        pedido.setEstado("COMPLETADO");
+        pedidoRepository.save(pedido);
+        return ResponseEntity.ok("Pedido marcado como COMPLETADO");
+    }
 
     // Update an existing pedido
     @PutMapping("/{id}")
@@ -103,12 +128,12 @@ public class PedidoController {
         if (pedidoDetails.getEstado() == null) {
             return ResponseEntity.badRequest().body("El campo 'estado' es obligatorio.");
         }
-    
+
         Optional<Pedido> optionalPedido = pedidoRepository.findById(id);
         if (!optionalPedido.isPresent()) {
             return ResponseEntity.badRequest().body("No se encontró el pedido con ID " + id);
         }
-    
+
         Pedido pedido = optionalPedido.get();
         pedido.setFecha(pedidoDetails.getFecha());
         pedido.setEstado(pedidoDetails.getEstado());
@@ -116,10 +141,9 @@ public class PedidoController {
         pedido.setCliente(pedidoDetails.getCliente());
         pedido.setFloricultor(pedidoDetails.getFloricultor());
         pedido.setValoracion(pedidoDetails.getValoracion());
-    
+
         return ResponseEntity.ok(pedidoRepository.save(pedido));
     }
-    
 
     // Delete a pedido
     @DeleteMapping("/{id}")
