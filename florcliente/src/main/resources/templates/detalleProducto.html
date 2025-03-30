@@ -60,13 +60,6 @@
         ● Sin stock
       </p>
 
-      <div class="border p-3 rounded my-3 bg-light">
-        <strong>Gana un 5% de descuento por hacerte miembro</strong><br/>
-        <small>¿No eres miembro? <a href="/registro">Regístrate</a></small>
-      </div>
-
-      <p>Un hermoso ramo de <span th:text="${producto.tipoFlor}">flores</span> frescas, seleccionadas a mano y enviadas directamente desde el floricultor local. Perfecto para regalar o decorar.</p>
-
       <ul>
         <li>Flores frescas de alta calidad</li>
         <li>Envío rápido el mismo día</li>
@@ -80,6 +73,10 @@
         <strong>Floricultor:</strong> <span th:text="${producto.floricultor.nombre}">Nombre</span><br>
         <strong>Categoría:</strong> <span th:text="${producto.tipoFlor}">Categoría</span>
       </p>
+      <div class="border p-3 rounded my-3 bg-light">
+        <strong>Gana un 5% de descuento por hacerte miembro</strong><br/>
+        <small>¿No eres miembro? <a href="/registro">Regístrate</a></small>
+      </div>
     </div>
 
     <!-- Caja compra -->

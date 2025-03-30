@@ -44,7 +44,6 @@ public class ClienteController {
         return clienteRepository.findById(email).map(cliente -> {
             cliente.setEmail(newCliente.getEmail());
             cliente.setNombre(newCliente.getNombre());
-            cliente.setDireccion(newCliente.getDireccion());
             clienteRepository.save(cliente);
             return ResponseEntity.ok().body(cliente);
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -56,9 +55,6 @@ public class ClienteController {
         return clienteRepository.findById(email).map(cliente -> {
             if (newCliente.getNombre() != null) {
                 cliente.setNombre(newCliente.getNombre());
-            }
-            if (newCliente.getDireccion() != null) {
-                cliente.setDireccion(newCliente.getDireccion());
             }
             clienteRepository.save(cliente);
             return ResponseEntity.ok().body(cliente);

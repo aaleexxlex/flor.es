@@ -18,7 +18,6 @@ public class Cliente {
     @Id 
     private String email;  // email como identificador único
     private String nombre;
-    private String direccion;
 
     @OneToMany(mappedBy = "cliente")
     @JsonIgnore 
