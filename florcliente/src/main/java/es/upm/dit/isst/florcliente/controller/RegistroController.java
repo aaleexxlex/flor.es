@@ -40,19 +40,52 @@ public class RegistroController {
 
     @PostMapping("/registro")
     public String registrarUsuario(
-            @RequestParam String tipoUsuario,
-            @ModelAttribute Cliente cliente,
-            @ModelAttribute Floricultor floricultor) {
+        @RequestParam String tipoUsuario,
+        @ModelAttribute Cliente cliente,
+        @ModelAttribute Floricultor floricultor,
+        Model model) {
 
-        if ("cliente".equals(tipoUsuario)) {
-            String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/clientes").toUriString();
-            restTemplate.postForObject(url, cliente, Cliente.class);
-        } else if ("floricultor".equals(tipoUsuario)) {
-            String url = UriComponentsBuilder.fromHttpUrl(baseUrl + "/floricultores").toUriString();
-            floricultor.setDisponibilidad(true); 
-            restTemplate.postForObject(url, floricultor, Floricultor.class);
+    boolean emailExiste = false;
+
+    if ("cliente".equals(tipoUsuario)) {
+        try {
+            restTemplate.getForObject(baseUrl + "/clientes/" + cliente.getEmail(), Cliente.class);
+            emailExiste = true;
+        } catch (Exception e) {
+            // No existe, se puede registrar
         }
 
-        return "redirect:/login";
+        if (emailExiste) {
+            model.addAttribute("error", "Ya existe un cliente registrado con ese email.");
+            model.addAttribute("tipoUsuario", "cliente");
+            model.addAttribute("cliente", cliente);
+            model.addAttribute("floricultor", new Floricultor());
+            return "registro";
+        }
+
+        restTemplate.postForObject(baseUrl + "/clientes", cliente, Cliente.class);
+
+    } else if ("floricultor".equals(tipoUsuario)) {
+        try {
+            restTemplate.getForObject(baseUrl + "/floricultores/" + floricultor.getEmail(), Floricultor.class);
+            emailExiste = true;
+        } catch (Exception e) {
+            // No existe, se puede registrar
+        }
+
+        if (emailExiste) {
+            model.addAttribute("error", "Ya existe un floricultor registrado con ese email.");
+            model.addAttribute("tipoUsuario", "floricultor");
+            model.addAttribute("cliente", new Cliente());
+            model.addAttribute("floricultor", floricultor);
+            return "registro";
+        }
+
+        floricultor.setDisponibilidad(true);
+        restTemplate.postForObject(baseUrl + "/floricultores", floricultor, Floricultor.class);
     }
+
+    return "redirect:/login";
+}
+
 }

@@ -20,7 +20,7 @@ pedido_id=$(curl -s -X POST "$BASE_URL/pedidos" -H "Content-Type: application/js
   "cliente": {"email": "juan@example.com"},
   "floricultor": {"email": "luis@example.com"},
   "fecha": "2025-03-22",
-  "estado": "Pendiente",
+  "estado": "PENDIENTE",
   "total": 21.0,
   "destino": "Calle 789"
 }' | jq -r '.idPedido')

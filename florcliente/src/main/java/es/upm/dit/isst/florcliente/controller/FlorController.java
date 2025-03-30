@@ -115,29 +115,64 @@ public class FlorController {
                         new ParameterizedTypeReference<List<Pedido>>() {
                         });
                 pedidosRecibidos = response.getBody();
-            }catch(
+            } catch (
 
-    Exception e)
-    {
-        e.printStackTrace();
+            Exception e) {
+                e.printStackTrace();
+            }
+
+            model.addAttribute("productos", productos);
+            model.addAttribute("pedidosRecibidos", pedidosRecibidos);
+        }
+
+        return "cuenta";
     }
-
-    model.addAttribute("productos",productos);model.addAttribute("pedidosRecibidos",pedidosRecibidos);
-    }
-
-    return"cuenta";}
 
     @GetMapping("/tienda")
-    public String mostrarTienda(Model model) {
+    public String mostrarTienda(
+        @RequestParam(required = false) String color,
+        @RequestParam(required = false) String origen,
+        @RequestParam(required = false) Double precioMin,
+        @RequestParam(required = false) Double precioMax,
+        @RequestParam(required = false) Boolean disponible,
+        Model model
+    ) {
         try {
-            List<Producto> productos = restTemplate.getForObject(baseUrl + "/productos", List.class);
+            ResponseEntity<List<Producto>> response = restTemplate.exchange(
+                baseUrl + "/productos",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Producto>>() {}
+            );
+    
+            List<Producto> productos = response.getBody();
+    
+            if (productos != null) {
+                productos = productos.stream()
+                    .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
+                    .filter(p -> origen == null || origen.isEmpty() || 
+                                 (origen.equalsIgnoreCase("Madrid") && p.getFloricultor().getUbicacion().equalsIgnoreCase("Madrid")) ||
+                                 (origen.equalsIgnoreCase("Barcelona") && p.getFloricultor().getUbicacion().equalsIgnoreCase("Barcelona")))
+                    .filter(p -> (precioMin == null || p.getPrecio() >= precioMin) &&
+                                 (precioMax == null || p.getPrecio() <= precioMax))
+                    .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
+                    .toList();
+            }
+    
             model.addAttribute("productos", productos);
+            model.addAttribute("color", color);
+            model.addAttribute("origen", origen);
+            model.addAttribute("precioMin", precioMin);
+            model.addAttribute("precioMax", precioMax);
+            model.addAttribute("disponible", disponible);
+    
         } catch (Exception e) {
             model.addAttribute("productos", new ArrayList<>());
         }
-
+    
         return "tienda";
     }
+    
 
     @GetMapping("/")
     public String redirigirRaiz() {
@@ -157,11 +192,22 @@ public class FlorController {
             Producto producto = restTemplate.getForObject(baseUrl + "/productos/" + id, Producto.class);
             model.addAttribute("producto", producto);
 
+            // Obtener número de valoraciones
+            Long numValoraciones = restTemplate.getForObject(
+                    baseUrl + "/valoraciones/producto/" + id + "/count",
+                    Long.class);
+            model.addAttribute("numValoraciones", numValoraciones);
+            Double mediaValoraciones = restTemplate.getForObject(
+                    baseUrl + "/valoraciones/producto/" + id + "/media",
+                    Double.class);
+            model.addAttribute("mediaValoraciones", mediaValoraciones);
+
             String errorCarrito = (String) session.getAttribute("errorCarrito");
             if (errorCarrito != null) {
                 model.addAttribute("errorCarrito", errorCarrito);
                 session.removeAttribute("errorCarrito");
             }
+
             String mensajeExito = (String) session.getAttribute("mensajeExito");
             if (mensajeExito != null) {
                 model.addAttribute("mensajeExito", mensajeExito);
@@ -206,7 +252,7 @@ public class FlorController {
 
     private String asignarImagenPorTipo(String tipo, boolean esRamo) {
         tipo = tipo.toLowerCase();
-    
+
         if (esRamo) {
             return switch (tipo) {
                 case "rosa" -> "/images/ramoRosas.jpg";
@@ -229,7 +275,6 @@ public class FlorController {
             };
         }
     }
-    
 
     @GetMapping("/eliminar/{id}")
     public String eliminarProducto(@PathVariable Long id) {
@@ -254,18 +299,17 @@ public class FlorController {
 
     // Ver detalle del pedido
     @GetMapping("/pedido/{id}")
-    public String verDetallePedido(@PathVariable Long id, Model model) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/pedidos/" + id;
-
+    public String verDetallePedido(@PathVariable Long id, Model model,
+            @ModelAttribute("rol") String rol) {
         try {
-            ResponseEntity<Pedido> response = restTemplate.getForEntity(url, Pedido.class);
+            ResponseEntity<Pedido> response = restTemplate.getForEntity(baseUrl + "/pedidos/" + id, Pedido.class);
             Pedido pedido = response.getBody();
             model.addAttribute("pedido", pedido);
+            model.addAttribute("rol", rol);
             return "detallePedido";
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/cuenta"; // redirige si hay error
+            return "redirect:/cuenta";
         }
     }
 
@@ -284,5 +328,36 @@ public class FlorController {
     public String mostrarConfirmacion() {
         return "pedidoConfirmado";
     }
+    @GetMapping("/floricultores")
+public String verFloricultores(Model model) {
+    try {
+        // Obtienes todos los floricultores
+        ResponseEntity<List<Floricultor>> response = restTemplate.exchange(
+            baseUrl + "/floricultores",
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<Floricultor>>() {}
+        );
+
+        List<Floricultor> floricultores = response.getBody();
+
+        // Para cada floricultor, traes sus productos
+        for (Floricultor flor : floricultores) {
+            ResponseEntity<List<Producto>> productosResponse = restTemplate.exchange(
+                baseUrl + "/productos/floricultor/" + flor.getEmail(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Producto>>() {}
+            );
+            flor.setProductos(productosResponse.getBody());
+        }
+
+        model.addAttribute("floricultores", floricultores);
+    } catch (Exception e) {
+        model.addAttribute("floricultores", new ArrayList<>());
+    }
+
+    return "floricultores"; // nombre del HTML
 }
 
+}

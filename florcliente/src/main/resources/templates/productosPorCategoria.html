@@ -18,6 +18,8 @@
   </nav>
   
 <div th:replace="fragments/categorizacionCircular :: categoriasCirculares"></div>
+<div th:replace="fragments/filtro :: filtroBusqueda(filtroAction='/home/' + ${tipoFlor})"></div>
+
 
 <section class="container-fluid py-3 px-5 mx-auto">
     <h2 class="mb-4 text-start" th:text="${tituloCategoria}">Categoría</h2>
@@ -34,9 +36,8 @@
           <h6 class="card-title mb-0 text-rosita" th:text="${producto.nombre}">Nombre</h6>
           <p class="mb-1 small text-muted" th:text="${producto.floricultor.nombre}">Floricultor</p>
           <div class="mb-1">
-            <small>★★★★☆ <span class="text-muted">(8)</span></small>
           </div>
-          <p class="fw-semibold mb-0">Desde: <span th:text="${producto.precio} + '€'">0€</span></p>
+          <p class="fw-semibold mb-0">Precio: <span th:text="${producto.precio} + '€'">0€</span></p>
           <a th:href="@{/producto/{id}(id=${producto.idProducto})}" class="stretched-link"></a>
         </div>
       </div>
