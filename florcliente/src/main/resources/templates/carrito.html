@@ -49,19 +49,39 @@
   <div class="col-md-3">
     <div class="card p-3">
 
-      <!-- ✅ Mensajes de error -->
+      <!-- Mensajes de error -->
       <div id="errorCheckout" class="alert alert-danger text-center d-none">
         Todos los productos del carrito deben ser del mismo floricultor.
       </div>
-      <div id="errorCampos" class="alert alert-danger text-center d-none mt-2"></div>
+      <div id="errorCampos" class="alert alert-danger text-center d-none mt-2">Formato incorrecto</div>
       <div id="mensajeSesion" class="alert alert-warning text-center d-none mt-2">
         Debes iniciar sesión para completar tu pedido. Redirigiendo...
       </div>
 
       <h5>Datos</h5>
-      <input type="text" name="pais" class="form-control my-2" placeholder="País">
-      <input type="text" name="ciudad" class="form-control my-2" placeholder="Ciudad">
-      <input type="text" name="codigoPostal" class="form-control my-2" placeholder="Código postal">
+
+      <!-- Ciudad -->
+      <select name="ciudad" class="form-select my-2" required>
+        <option value="">Selecciona una ciudad</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Barcelona">Barcelona</option>
+        <option value="Valencia">Valencia</option>
+        <option value="Sevilla">Sevilla</option>
+        <option value="Zaragoza">Zaragoza</option>
+        <option value="Málaga">Málaga</option>
+        <option value="Bilbao">Bilbao</option>
+        <option value="Alicante">Alicante</option>
+        <option value="Valladolid">Valladolid</option>
+        <option value="Murcia">Murcia</option>
+      </select>
+
+      <!-- Dirección -->
+      <input type="text" name="direccion" class="form-control my-2" placeholder="Dirección exacta"
+             required minlength="5" maxlength="100" />
+
+      <!-- Código postal -->
+      <input type="number" name="codigoPostal" class="form-control my-2" placeholder="Código postal"
+             required min="10000" max="99999" oninput="this.value = this.value.slice(0, 5)" />
 
       <hr>
       <div class="d-flex justify-content-between">
@@ -80,8 +100,7 @@
       </div>
 
       <form onsubmit="return false;">
-        <button id="checkoutBtn"
-                class="btn btn-principal mt-3 w-100"
+        <button id="checkoutBtn" class="btn btn-principal mt-3 w-100"
                 th:attr="data-email-cliente=${usuario != null ? usuario.email : 'anonimo'}">
           COMPLETAR
         </button>
@@ -101,26 +120,30 @@
     errorDiv.textContent = mensaje;
     errorDiv.classList.remove("d-none");
   }
-  
+
   document.getElementById("checkoutBtn").addEventListener("click", function () {
-    const pais = document.querySelector("input[name='pais']").value.trim();
-    const ciudad = document.querySelector("input[name='ciudad']").value.trim();
+    const ciudad = document.querySelector("select[name='ciudad']").value.trim();
+    const direccion = document.querySelector("input[name='direccion']").value.trim();
     const cp = document.querySelector("input[name='codigoPostal']").value.trim();
-  
-    if (!pais || !ciudad || !cp) {
+
+    if (!ciudad || !direccion || !cp) {
       mostrarError("Por favor, completa todos los campos de dirección.");
       return;
     }
-  
-    const destino = `${pais}, ${ciudad}, ${cp}`;
+    if (isNaN(cp) || cp.length !== 5) {
+      mostrarError("El código postal debe ser numérico y tener 5 cifras.");
+      return;
+    }
+
+    const destino = `${direccion}, ${ciudad}, ${cp}`;
     const emailCliente = this.dataset.emailCliente;
     const productos = Array.from(document.querySelectorAll(".producto-carrito"));
-  
+
     if (productos.length === 0) {
       mostrarError("El carrito está vacío.");
       return;
     }
-  
+
     const emailFloricultor = productos[0].dataset.emailFloricultor;
     if (!emailCliente || emailCliente === "anonimo") {
       const aviso = document.getElementById("mensajeSesion");
@@ -130,7 +153,7 @@
       }, 2500);
       return;
     }
-  
+
     const mismoFloricultor = productos.every(prod =>
       prod.dataset.emailFloricultor === emailFloricultor
     );
@@ -138,7 +161,7 @@
       document.getElementById("errorCheckout").classList.remove("d-none");
       return;
     }
-  
+
     const lineasPedido = productos.map(prod => {
       return {
         producto: { idProducto: parseInt(prod.dataset.idProducto) },
@@ -146,15 +169,16 @@
         precioUnitario: parseFloat(prod.dataset.precio)
       };
     });
-  
+
     const pedido = {
       cliente: { email: emailCliente },
       floricultor: { email: emailFloricultor },
       estado: "PENDIENTE",
       destino: destino,
+      fecha: new Date().toISOString(),
       lineasPedido: lineasPedido
     };
-  
+
     fetch("http://localhost:8080/pedidos", {
       method: "POST",
       headers: {
@@ -162,15 +186,17 @@
       },
       body: JSON.stringify(pedido)
     })
-    .then(res => {
-      if (!res.ok) throw new Error("Error al crear el pedido.");
-      return res.json();
-    })
-    .then(() => fetch("/carrito/vaciar", { method: "POST" }))
-    .then(() => window.location.href = "/pedido/confirmado")
-    .catch(err => {
-      mostrarError("Hubo un problema al procesar tu pedido: " + err.message);
-    });
+      .then(res => {
+        if (!res.ok) throw new Error("Error al crear el pedido.");
+        return res.json();
+      })
+      .then(() => fetch("/carrito/vaciar", { method: "POST" }))
+      .then(() => window.location.href = "/pedido/confirmado")
+      .catch(err => {
+        mostrarError("Hubo un problema al procesar tu pedido: " + err.message);
+      });
   });
-  </script>
-  
+</script>
+
+</body>
+</html>
