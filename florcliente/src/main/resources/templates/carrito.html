@@ -48,6 +48,12 @@
   <!-- RESUMEN -->
   <div class="col-md-3">
     <div class="card p-3">
+
+      <!-- ✅ Mensaje de error en checkout -->
+      <div id="errorCheckout" class="alert alert-danger text-center d-none">
+        Todos los productos del carrito deben ser del mismo floricultor.
+      </div>
+
       <h5>Datos</h5>
       <input type="text" name="pais" class="form-control my-2" placeholder="País">
       <input type="text" name="ciudad" class="form-control my-2" placeholder="Ciudad">
@@ -107,10 +113,19 @@ document.getElementById("checkoutBtn").addEventListener("click", function () {
 
   const emailFloricultor = productos[0].dataset.emailFloricultor;
   if (!emailCliente || emailCliente === "anonimo") {
-  alert("Debes iniciar sesión para completar tu pedido.");
-  window.location.href = "/login";
-  return;
-}
+    alert("Debes iniciar sesión para completar tu pedido.");
+    window.location.href = "/login";
+    return;
+  }
+
+  //Validación: todos del mismo floricultor
+  const mismoFloricultor = productos.every(prod =>
+    prod.dataset.emailFloricultor === emailFloricultor
+  );
+  if (!mismoFloricultor) {
+    document.getElementById("errorCheckout").classList.remove("d-none");
+    return;
+  }
 
   const lineasPedido = productos.map(prod => {
     return {
@@ -140,11 +155,9 @@ document.getElementById("checkoutBtn").addEventListener("click", function () {
     return res.json();
   })
   .then(() => {
-    // Vaciar el carrito
     return fetch("/carrito/vaciar", { method: "POST" });
   })
   .then(() => {
-    // Redirigir al resumen
     window.location.href = "/pedido/confirmado";
   })
   .catch(err => {

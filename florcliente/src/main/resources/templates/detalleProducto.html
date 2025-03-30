@@ -28,6 +28,11 @@
 <header th:replace="~{fragments/navbar :: navbar}"></header>
 
 <div class="container-fluid px-5 my-5">
+  <div th:if="${errorCarrito}" class="alert alert-danger text-center mx-auto mt-3" style="max-width: 600px;"
+    th:text="${errorCarrito}">
+  </div>
+
+  
   <div class="row">
 
     <!-- Imagen producto -->
