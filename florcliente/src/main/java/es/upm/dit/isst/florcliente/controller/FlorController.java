@@ -55,10 +55,12 @@ public class FlorController {
                 model.addAttribute("rol", "floricultor");
                 return "redirect:/home";
             } catch (Exception ex) {
-                return "redirect:/error"; // Redirigir a una página de error si no se encuentra el usuario
+                model.addAttribute("mensajeError", "No existe un usuario registrado con ese email.");
+                return "login";
             }
         }
     }
+    
 
     @GetMapping("/home")
     public String mostrarHome(Model model) {
