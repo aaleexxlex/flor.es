@@ -11,7 +11,7 @@
   <h1 class="text-center mb-5">Mi cuenta</h1>
 
   <!-- Vista para cliente -->
-  <div th:if="${rol} == 'cliente'">
+  <div th:if="${rol == 'cliente'}">
     <h3 class="mb-4">Pedidos realizados</h3>
     <div th:if="${#lists.isEmpty(pedidos)}">
       <p>No tienes pedidos aún.</p>
