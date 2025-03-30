@@ -75,4 +75,6 @@ curl -X POST "$BASE_URL/pedidos" -H "Content-Type: application/json" -d '{
   ]
 }'
 
+
+
 echo "✅ Base de datos poblada con éxito."
