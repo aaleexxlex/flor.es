@@ -130,49 +130,50 @@ public class FlorController {
 
     @GetMapping("/tienda")
     public String mostrarTienda(
-        @RequestParam(required = false) String color,
-        @RequestParam(required = false) String origen,
-        @RequestParam(required = false) Double precioMin,
-        @RequestParam(required = false) Double precioMax,
-        @RequestParam(required = false) Boolean disponible,
-        Model model
-    ) {
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) String origen,
+            @RequestParam(required = false) Double precioMin,
+            @RequestParam(required = false) Double precioMax,
+            @RequestParam(required = false) Boolean disponible,
+            Model model) {
         try {
             ResponseEntity<List<Producto>> response = restTemplate.exchange(
-                baseUrl + "/productos",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Producto>>() {}
-            );
-    
+                    baseUrl + "/productos",
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Producto>>() {
+                    });
+
             List<Producto> productos = response.getBody();
-    
+
             if (productos != null) {
                 productos = productos.stream()
-                    .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
-                    .filter(p -> origen == null || origen.isEmpty() || 
-                                 (origen.equalsIgnoreCase("Madrid") && p.getFloricultor().getUbicacion().equalsIgnoreCase("Madrid")) ||
-                                 (origen.equalsIgnoreCase("Barcelona") && p.getFloricultor().getUbicacion().equalsIgnoreCase("Barcelona")))
-                    .filter(p -> (precioMin == null || p.getPrecio() >= precioMin) &&
-                                 (precioMax == null || p.getPrecio() <= precioMax))
-                    .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
-                    .toList();
+                        .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
+                        .filter(p -> origen == null || origen.isEmpty() ||
+                                (origen.equalsIgnoreCase("Madrid")
+                                        && p.getFloricultor().getUbicacion().equalsIgnoreCase("Madrid"))
+                                ||
+                                (origen.equalsIgnoreCase("Barcelona")
+                                        && p.getFloricultor().getUbicacion().equalsIgnoreCase("Barcelona")))
+                        .filter(p -> (precioMin == null || p.getPrecio() >= precioMin) &&
+                                (precioMax == null || p.getPrecio() <= precioMax))
+                        .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
+                        .toList();
             }
-    
+
             model.addAttribute("productos", productos);
             model.addAttribute("color", color);
             model.addAttribute("origen", origen);
             model.addAttribute("precioMin", precioMin);
             model.addAttribute("precioMax", precioMax);
             model.addAttribute("disponible", disponible);
-    
+
         } catch (Exception e) {
             model.addAttribute("productos", new ArrayList<>());
         }
-    
+
         return "tienda";
     }
-    
 
     @GetMapping("/")
     public String redirigirRaiz() {
@@ -328,36 +329,55 @@ public class FlorController {
     public String mostrarConfirmacion() {
         return "pedidoConfirmado";
     }
+
     @GetMapping("/floricultores")
-public String verFloricultores(Model model) {
-    try {
-        // Obtienes todos los floricultores
-        ResponseEntity<List<Floricultor>> response = restTemplate.exchange(
-            baseUrl + "/floricultores",
-            HttpMethod.GET,
-            null,
-            new ParameterizedTypeReference<List<Floricultor>>() {}
-        );
-
-        List<Floricultor> floricultores = response.getBody();
-
-        // Para cada floricultor, traes sus productos
-        for (Floricultor flor : floricultores) {
-            ResponseEntity<List<Producto>> productosResponse = restTemplate.exchange(
-                baseUrl + "/productos/floricultor/" + flor.getEmail(),
+    public String verFloricultores(Model model) {
+        try {
+            ResponseEntity<List<Floricultor>> response = restTemplate.exchange(
+                baseUrl + "/floricultores",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Producto>>() {}
+                new ParameterizedTypeReference<List<Floricultor>>() {}
             );
-            flor.setProductos(productosResponse.getBody());
+    
+            List<Floricultor> floricultores = response.getBody();
+    
+            for (Floricultor flor : floricultores) {
+                // Obtener productos
+                ResponseEntity<List<Producto>> productosResponse = restTemplate.exchange(
+                    baseUrl + "/productos/floricultor/" + flor.getEmail(),
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Producto>>() {}
+                );
+                flor.setProductos(productosResponse.getBody());
+    
+                // Obtener media y número de valoraciones
+                try {
+                    Double media = restTemplate.getForObject(
+                        baseUrl + "/valoraciones/floricultor/" + flor.getEmail() + "/media",
+                        Double.class
+                    );
+                    Long count = restTemplate.getForObject(
+                        baseUrl + "/valoraciones/floricultor/" + flor.getEmail() + "/count",
+                        Long.class
+                    );
+                    flor.setMediaValoraciones(media != null ? media : 0.0);
+                    flor.setNumeroValoraciones(count != null ? count.intValue() : 0);
+                } catch (Exception e) {
+                    flor.setMediaValoraciones(0.0);
+                    flor.setNumeroValoraciones(0);
+                }
+            }
+    
+            model.addAttribute("floricultores", floricultores);
+        } catch (Exception e) {
+            model.addAttribute("floricultores", new ArrayList<>());
         }
-
-        model.addAttribute("floricultores", floricultores);
-    } catch (Exception e) {
-        model.addAttribute("floricultores", new ArrayList<>());
+    
+        return "floricultores";
     }
+    
 
-    return "floricultores"; // nombre del HTML
-}
 
 }

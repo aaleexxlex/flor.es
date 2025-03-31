@@ -3,7 +3,8 @@ package es.upm.dit.isst.florcliente.model;
 import lombok.*;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -16,4 +17,8 @@ public class Floricultor {
 
     private List<Pedido> pedidos;
     private List<Producto> productos;
+
+    private Double mediaValoraciones = 0.0;
+    private Integer numeroValoraciones = 0;
+
 }
