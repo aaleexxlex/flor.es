@@ -317,3 +317,32 @@ select {
     cursor: pointer;
   }
   
+
+/*Cuenta Editar y Eliminar */
+.btn-editar {
+  background-color: #2196f3;
+  color: white;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-editar:hover {
+  background-color: #1976d2;
+}
+
+.btn-eliminar {
+  background-color: #f44336;
+  color: white;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-eliminar:hover {
+  background-color: #c62828;
+}
