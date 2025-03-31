@@ -58,6 +58,11 @@ chmod +x poblar.sh
 ./poblar.sh
 ```
 
+### 5. Abrir en el navegador
+
+```http://localhost:8083/home
+```
+
 ---
 
 ## 🔑 Usuarios de prueba

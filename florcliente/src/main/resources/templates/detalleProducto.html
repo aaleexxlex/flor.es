@@ -4,15 +4,15 @@
 <head th:replace="~{fragments/head :: head}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-.imagen-producto {
-  width: 100%;
-  max-width: 350px;
-  height: 350px;
-  object-fit: cover;
-  object-position: center;
-  border-radius: 10px;
-  background-color: #f8f8f8;
-}
+    .imagen-producto {
+      width: 100%;
+      max-width: 350px;
+      height: 350px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 10px;
+      background-color: #f8f8f8;
+    }
 
 
     .tag-size {
@@ -48,9 +48,11 @@
 
       <!-- Imagen -->
       <div class="col-md-4 d-flex justify-content-center align-items-start">
-        <img th:src="@{${producto.imagen}}" th:alt="'Imagen de ' + ${producto.nombre}"
-          class="img-fluid rounded imagen-producto" />
+        <div class="imagen-producto-container">
+          <img th:src="@{${producto.imagen}}" th:alt="'Imagen de ' + ${producto.nombre}" />
+        </div>
       </div>
+
 
       <!-- Detalles -->
       <div class="col-md-4">
@@ -67,11 +69,11 @@
             </span>
           </span>
         </div>
-        
+
         <div class="text-muted text-center" th:if="${numValoraciones == 0}">
           Aún no hay valoraciones
         </div>
-        
+
 
         <!-- Stock -->
         <p class="mt-2 text-center" th:if="${producto.cantidad > 0}">
