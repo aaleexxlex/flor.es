@@ -83,50 +83,65 @@ public class FlorController {
                         baseUrl + "/pedidos/cliente/" + ((Cliente) usuario).getEmail(),
                         HttpMethod.GET,
                         null,
-                        new ParameterizedTypeReference<List<Pedido>>() {
-                        });
+                        new ParameterizedTypeReference<List<Pedido>>() {});
                 pedidos = response.getBody();
             } catch (Exception e) {
                 e.printStackTrace();
             }
             model.addAttribute("pedidos", pedidos);
         } else if ("floricultor".equals(rol)) {
+            Floricultor floricultor = (Floricultor) usuario;
+            String email = floricultor.getEmail();
+    
             List<Producto> productos = new ArrayList<>();
             List<Pedido> pedidosRecibidos = new ArrayList<>();
-            String email = ((Floricultor) usuario).getEmail();
-
+            Double mediaValoraciones = 0.0;
+            Long numeroValoraciones = 0L;
+    
             try {
+                // Obtener productos del floricultor
                 ResponseEntity<List<Producto>> response = restTemplate.exchange(
                         baseUrl + "/productos/floricultor/" + email,
                         HttpMethod.GET,
                         null,
-                        new ParameterizedTypeReference<List<Producto>>() {
-                        });
+                        new ParameterizedTypeReference<List<Producto>>() {});
                 productos = response.getBody();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+    
             try {
+                // Obtener pedidos recibidos por el floricultor
                 ResponseEntity<List<Pedido>> response = restTemplate.exchange(
                         baseUrl + "/pedidos/floricultor/" + email,
                         HttpMethod.GET,
                         null,
-                        new ParameterizedTypeReference<List<Pedido>>() {
-                        });
+                        new ParameterizedTypeReference<List<Pedido>>() {});
                 pedidosRecibidos = response.getBody();
-            } catch (
-
-            Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
+    
+            try {
+                // Obtener la media y número de valoraciones del floricultor
+                mediaValoraciones = restTemplate.getForObject(baseUrl + "/valoraciones/floricultor/" + email + "/media", Double.class);
+                numeroValoraciones = restTemplate.getForObject(baseUrl + "/valoraciones/floricultor/" + email + "/count", Long.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+    
+            // Añadir el floricultor y sus datos al modelo
+            model.addAttribute("floricultor", floricultor);
             model.addAttribute("productos", productos);
             model.addAttribute("pedidosRecibidos", pedidosRecibidos);
+            model.addAttribute("mediaValoraciones", mediaValoraciones);
+            model.addAttribute("numeroValoraciones", numeroValoraciones);
         }
-
+    
         return "cuenta";
     }
+    
+
 
     @GetMapping("/tienda")
     public String mostrarTienda(
