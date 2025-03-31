@@ -89,6 +89,7 @@ README.md
 - 👤 Alejandro Gomez
 - 👤 Jaime Gonzalez
 - 👤 Mariano Lorenzo Kayser
+- 👤 Victor Garcia
 
 ---
 
