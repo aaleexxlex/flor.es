@@ -60,7 +60,8 @@ chmod +x poblar.sh
 
 ### 5. Abrir en el navegador
 
-```http://localhost:8083/home
+```bash
+http://localhost:8083/home
 ```
 
 ---
