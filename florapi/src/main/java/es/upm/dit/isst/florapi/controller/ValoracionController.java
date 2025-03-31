@@ -60,12 +60,13 @@ public class ValoracionController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaValoracion);
     }
+
     @GetMapping("/producto/{id}/count")
     public ResponseEntity<Long> contarValoracionesProducto(@PathVariable Long id) {
         long total = valoracionRepository.contarValoracionesPorProducto(id);
         return ResponseEntity.ok(total);
     }
-    
+
     @GetMapping("/producto/{id}/media")
     public ResponseEntity<Double> mediaValoracionesProducto(@PathVariable Long id) {
         Double media = valoracionRepository.calcularMediaValoracionesPorProducto(id);
@@ -74,6 +75,17 @@ public class ValoracionController {
         }
         return ResponseEntity.ok(media);
     }
-    
+
+    @GetMapping("/floricultor/{email}/media")
+    public ResponseEntity<Double> mediaValoracionesFloricultor(@PathVariable String email) {
+        Double media = valoracionRepository.calcularMediaValoracionesPorFloricultor(email);
+        return ResponseEntity.ok(media != null ? media : 0.0);
+    }
+
+    @GetMapping("/floricultor/{email}/count")
+    public ResponseEntity<Long> contarValoracionesFloricultor(@PathVariable String email) {
+        Long total = valoracionRepository.contarValoracionesPorFloricultor(email);
+        return ResponseEntity.ok(total != null ? total : 0L);
+    }
 
 }

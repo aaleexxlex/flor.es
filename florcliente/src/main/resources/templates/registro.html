@@ -1,72 +1,115 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head"></head>
-<body class="d-flex flex-column min-vh-100">
+  <head th:replace="fragments/head :: head"></head>
+  <body class="d-flex flex-column min-vh-100">
+    <!-- NAVBAR -->
+    <header th:replace="fragments/navbar :: navbar"></header>
 
-<!-- NAVBAR -->
-<header th:replace="fragments/navbar :: navbar"></header>
-
-<!-- REGISTRO -->
-<main class="flex-grow-1 bg-cover d-flex justify-content-center align-items-center py-5" 
-      style="background-image: url('/images/fondo-flores.jpg'); background-size: cover; background-position: center;">
-
-      <div class="card text-center shadow-lg p-4 w-100" style="max-width: 400px; background-color: rgba(255,255,255,0.95);">
-
-        <img src="/images/logo-solo.png" alt="Logo" class="mx-auto" style="height: 100px;">
+    <!-- REGISTRO -->
+    <main
+      class="flex-grow-1 bg-cover d-flex justify-content-center align-items-center py-5"
+      style="
+        background-image: url('/images/fondo-flores.jpg');
+        background-size: cover;
+        background-position: center;
+      "
+    >
+      <div
+        class="card text-center shadow-lg p-4 w-100"
+        style="max-width: 400px; background-color: rgba(255, 255, 255, 0.95)"
+      >
+        <img
+          src="/images/logo-solo.png"
+          alt="Logo"
+          class="mx-auto"
+          style="height: 100px"
+        />
         <h5 class="my-3">Registro de Usuario</h5>
-        
-        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div
+          th:if="${error}"
+          class="alert alert-danger"
+          th:text="${error}"
+        ></div>
 
         <form th:action="@{/registro}" method="post">
-            <input type="text" name="nombre" class="form-control mb-3" placeholder="Nombre" required>
-            <input type="email" name="email" class="form-control mb-3" placeholder="Correo electrónico" required>
-        
-            <!-- Select Ciudad (solo para floricultores) -->
-            <div id="ciudadGroup" class="mb-3" style="display: none;">
-                <select name="ubicacion" class="form-select" required>
-                    <option value="">Selecciona una ciudad</option>
-                    <option value="Madrid">Madrid</option>
-                    <option value="Barcelona">Barcelona</option>
-                    <option value="Valencia">Valencia</option>
-                    <option value="Sevilla">Sevilla</option>
-                    <option value="Zaragoza">Zaragoza</option>
-                    <option value="Málaga">Málaga</option>
-                    <option value="Bilbao">Bilbao</option>
-                    <option value="Alicante">Alicante</option>
-                    <option value="Valladolid">Valladolid</option>
-                    <option value="Murcia">Murcia</option>
-                </select>
-            </div>
-        
-            <select id="tipoUsuario" name="tipoUsuario" class="form-select mb-3">
-                <option value="cliente">Cliente</option>
-                <option value="floricultor">Floricultor</option>
+          <input
+            type="text"
+            name="nombre"
+            class="form-control mb-3"
+            placeholder="Nombre"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            class="form-control mb-3"
+            placeholder="Correo electrónico"
+            required
+          />
+
+          <!-- Select Ciudad (solo para floricultores) -->
+          <div id="ciudadGroup" class="mb-3" style="display: none">
+            <select name="ubicacion" id="ubicacion" class="form-select">
+              <option value="">Selecciona una ciudad</option>
+              <option value="Madrid">Madrid</option>
+              <option value="Barcelona">Barcelona</option>
+              <option value="Valencia">Valencia</option>
+              <option value="Sevilla">Sevilla</option>
+              <option value="Zaragoza">Zaragoza</option>
+              <option value="Málaga">Málaga</option>
+              <option value="Bilbao">Bilbao</option>
+              <option value="Alicante">Alicante</option>
+              <option value="Valladolid">Valladolid</option>
+              <option value="Murcia">Murcia</option>
             </select>
-        
-            <button type="submit" class="btn w-100" style="background-color: #D72684; color: white;">Registrarse</button>
+          </div>
+
+          <select id="tipoUsuario" name="tipoUsuario" class="form-select mb-3">
+            <option value="cliente">Cliente</option>
+            <option value="floricultor">Floricultor</option>
+          </select>
+
+          <button
+            type="submit"
+            class="btn w-100"
+            style="background-color: #d72684; color: white"
+          >
+            Registrarse
+          </button>
         </form>
-        
+
         <script>
-            const tipoUsuarioSelect = document.getElementById('tipoUsuario');
-            const ciudadGroup = document.getElementById('ciudadGroup');
-        
-            tipoUsuarioSelect.addEventListener('change', () => {
-                ciudadGroup.style.display = tipoUsuarioSelect.value === 'floricultor' ? 'block' : 'none';
-            });
-        
-            window.addEventListener('load', () => {
-                ciudadGroup.style.display = tipoUsuarioSelect.value === 'floricultor' ? 'block' : 'none';
+          const tipoUsuarioSelect = document.getElementById("tipoUsuario");
+          const ciudadGroup = document.getElementById("ciudadGroup");
+
+          tipoUsuarioSelect.addEventListener("change", () => {
+            ciudadGroup.style.display =
+              tipoUsuarioSelect.value === "floricultor" ? "block" : "none";
+          });
+
+          window.addEventListener("load", () => {
+            ciudadGroup.style.display =
+              tipoUsuarioSelect.value === "floricultor" ? "block" : "none";
+          });
+          document
+            .querySelector("form")
+            .addEventListener("submit", function (e) {
+              const tipo = tipoUsuarioSelect.value;
+              const ciudad = document.getElementById("ubicacion").value;
+
+              if (tipo === "floricultor" && ciudad === "") {
+                e.preventDefault();
+                alert("Por favor, selecciona una ciudad si eres floricultor.");
+              }
             });
         </script>
-        
-        
 
         <a href="/home" class="btn btn-light mt-3">Volver a la home</a>
-    </div>
-</main>
+      </div>
+    </main>
 
-<!-- FOOTER -->
-<footer th:replace="fragments/footer :: footer"></footer>
-
-</body>
+    <!-- FOOTER -->
+    <footer th:replace="fragments/footer :: footer"></footer>
+  </body>
 </html>

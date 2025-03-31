@@ -10,8 +10,13 @@ public interface ValoracionRepository extends JpaRepository<Valoracion, Long> {
     long contarValoracionesPorProducto(@Param("productoId") Long productoId);
 
     @Query("SELECT COALESCE(AVG(v.calificacionPedido), 0) " +
-    "FROM Valoracion v JOIN v.pedido p JOIN p.lineasPedido l WHERE l.producto.idProducto = :productoId")
-Double calcularMediaValoracionesPorProducto(@Param("productoId") Long productoId);
+            "FROM Valoracion v JOIN v.pedido p JOIN p.lineasPedido l WHERE l.producto.idProducto = :productoId")
+    Double calcularMediaValoracionesPorProducto(@Param("productoId") Long productoId);
 
+    @Query("SELECT COALESCE(AVG(v.calificacionPedido), 0) FROM Valoracion v JOIN v.pedido p WHERE p.floricultor.email = :email")
+    Double calcularMediaValoracionesPorFloricultor(@Param("email") String email);
+
+    @Query("SELECT COUNT(v) FROM Valoracion v JOIN v.pedido p WHERE p.floricultor.email = :email")
+    Long contarValoracionesPorFloricultor(@Param("email") String email);
 
 }
