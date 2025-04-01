@@ -54,6 +54,8 @@ cd ../florcliente
 ### 4. Poblar la base de datos en florapi/src/main/resources/requests (opcional)
 
 ```bash
+
+bash
 chmod +x poblar.sh
 ./poblar.sh
 ```
