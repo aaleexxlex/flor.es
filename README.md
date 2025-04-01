@@ -33,25 +33,25 @@ flor.es es una aplicación web que conecta a floricultores locales con clientes 
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/usuario/flor.es.git
+git clone https://github.com/aaleexxlex/flor.es
 cd flor.es
 ```
 
 ### 2. Iniciar el backend
 
 ```bash
-cd backend
+cd florapi
 ./mvnw spring-boot:run
 ```
 
 ### 3. Iniciar el frontend
 
 ```bash
-cd ../frontend
+cd ../florcliente
 ./mvnw spring-boot:run
 ```
 
-### 4. Poblar la base de datos (opcional)
+### 4. Poblar la base de datos en florapi/src/main/resources/requests (opcional)
 
 ```bash
 chmod +x poblar.sh
@@ -76,8 +76,8 @@ http://localhost:8083/home
 ## 📦 Estructura del proyecto
 
 ```
-/backend
-/frontend
+/florapi
+/florliente
 README.md
 ```
 
