@@ -23,11 +23,12 @@
          data-ciudad-floricultor=${linea.producto.floricultor.ubicacion},
          data-stock=${linea.producto.cantidad}">
         <div class="d-flex align-items-center">
-           <!-- Botón eliminar -->
-    <form method="post" th:action="@{/carrito/eliminar}">
-      <input type="hidden" name="idProducto" th:value="${linea.producto.idProducto}" />
-      <button class="btn btn-link text-danger me-2" style="font-size: 1.2rem;" title="Quitar del carrito">×</button>
-    </form>
+          <!-- Botón eliminar -->
+          <form method="post" th:action="@{/carrito/eliminar}">
+            <input type="hidden" name="idProducto" th:value="${linea.producto.idProducto}" />
+            <button class="btn btn-link text-danger me-2" style="font-size: 1.2rem;"
+              title="Quitar del carrito">×</button>
+          </form>
           <img th:src="@{${linea.producto.imagen}}" th:alt="${linea.producto.nombre}" class="img-thumbnail"
             style="width: 100px;">
           <div class="ms-3">
@@ -105,7 +106,9 @@
 
         <div class="d-flex justify-content-between">
           <span>Total</span>
-          <strong class="text-danger" th:text="${total + 4.5 + '€'}">0€</strong>
+          <strong class="text-danger"
+            th:text="${#numbers.formatDecimal(total + 4.5, 1, 'COMMA', 2, 'POINT')} + '€'">0€</strong>
+
         </div>
 
         <form onsubmit="return false;">
@@ -165,9 +168,9 @@
       const ciudadFloricultor = productos[0].dataset.ciudadFloricultor;
 
       if (ciudadFloricultor !== ciudad) {
-      mostrarError(`Solo puedes comprar productos de floricultores que operen en la ciudad que has elegido. El floricultor está en ${ciudadFloricultor}.`);
-      return;
-    }
+        mostrarError(`Solo puedes comprar productos de floricultores que operen en la ciudad que has elegido. El floricultor está en ${ciudadFloricultor}.`);
+        return;
+      }
 
       const mismoFloricultor = productos.every(prod =>
         prod.dataset.emailFloricultor === emailFloricultor
@@ -226,5 +229,5 @@
   </script>
 
 </body>
- 
+
 </html>
