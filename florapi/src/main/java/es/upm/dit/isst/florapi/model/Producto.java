@@ -26,6 +26,7 @@ public class Producto {
     private int cantidad;
     private String imagen;
     private boolean esRamo;
+    private String ocasion;
 
 
     @ManyToOne

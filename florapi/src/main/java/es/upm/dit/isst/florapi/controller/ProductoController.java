@@ -44,30 +44,36 @@ public class ProductoController {
     }
 
     @PutMapping("/{idProducto}")
-    public ResponseEntity<Producto> updateProducto(@PathVariable Long idProducto, @RequestBody Producto updatedProducto) {
+    public ResponseEntity<Producto> updateProducto(@PathVariable Long idProducto,
+            @RequestBody Producto updatedProducto) {
         return productoRepository.findById(idProducto).map(producto -> {
             producto.setNombre(updatedProducto.getNombre());
             producto.setTipoFlor(updatedProducto.getTipoFlor());
-            producto.setColor(updatedProducto.getColor()); 
+            producto.setColor(updatedProducto.getColor());
             producto.setPrecio(updatedProducto.getPrecio());
-            producto.setCantidad(updatedProducto.getCantidad()); 
+            producto.setCantidad(updatedProducto.getCantidad());
             producto.setImagen(updatedProducto.getImagen());
             producto.setFloricultor(updatedProducto.getFloricultor());
+            producto.setOcasion(updatedProducto.getOcasion());
+            producto.setEsRamo(updatedProducto.isEsRamo());
             productoRepository.save(producto);
             return ResponseEntity.ok(producto);
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     @GetMapping("/productos/tipo/{tipoFlor}")
     public List<Producto> getProductosPorTipo(@PathVariable String tipoFlor) {
         return productoRepository.findByTipoFlorIgnoreCase(tipoFlor);
     }
+
     @GetMapping("/ramos")
     public List<Producto> getRamos() {
         return productoRepository.findByEsRamoTrue();
     }
 
     @PatchMapping("/{idProducto}")
-    public ResponseEntity<Producto> partialUpdateProducto(@PathVariable Long idProducto, @RequestBody Producto partialProducto) {
+    public ResponseEntity<Producto> partialUpdateProducto(@PathVariable Long idProducto,
+            @RequestBody Producto partialProducto) {
         return productoRepository.findById(idProducto).map(producto -> {
             if (partialProducto.getNombre() != null) {
                 producto.setNombre(partialProducto.getNombre());
