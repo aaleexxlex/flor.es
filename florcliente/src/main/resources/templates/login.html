@@ -17,8 +17,9 @@
             <div th:if="${mensajeLogout}" class="alert alert-success" th:text="${mensajeLogout}"></div>
 
             <!-- FORMULARIO -->
-            <form method="post" th:action="@{/iniciar-sesion}">
+            <form method="post" th:action="@{/login}">
                 <input type="email" id="email" name="email" class="form-control mb-3" placeholder="Email" required/>
+                <input type="password" id="password" name="password" class="form-control mb-3" placeholder="Contraseña" required/>
                 <button type="submit" class="btn w-100" style="background-color: #D72684; color: white;">Login</button>
             </form>
 

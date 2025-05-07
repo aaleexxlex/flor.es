@@ -6,6 +6,8 @@ import es.upm.dit.isst.florapi.model.*;
 import es.upm.dit.isst.florapi.repository.*;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.net.URISyntaxException;
 import org.springframework.http.HttpStatus;
 import java.net.URI;
@@ -15,6 +17,7 @@ public class FloricultorController {
 
     @Autowired
     private FloricultorRepository floricultorRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // Obtener todos los floricultores
     @GetMapping
@@ -28,6 +31,8 @@ public class FloricultorController {
         if (floricultorRepository.findById(floricultor.getEmail()).isPresent()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
+        String encodedPassword = passwordEncoder.encode(floricultor.getPassword());
+        floricultor.setPassword(encodedPassword);
 
         Floricultor result = floricultorRepository.save(floricultor);
         return ResponseEntity.created(new URI("/floricultores/" + result.getEmail())).body(result);

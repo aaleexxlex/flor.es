@@ -7,32 +7,28 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Controller
 public class RegistroController {
 
     private final RestTemplate restTemplate;
     private final String baseUrl = "http://localhost:8080"; // URL del backend
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public RegistroController() {
         this.restTemplate = new RestTemplate();
+        this.passwordEncoder = new BCryptPasswordEncoder(); // cifrador de contraseñas
     }
 
-    /*@GetMapping("/logout")
-    public String Logout(Model model) {
-     
-        return "redirect:/catalogo"; // Muestra la vista de registro
-    }
-*/
     @GetMapping("/login")
     public String mostrarFormularioLogin(Model model) {
-     
-        return "login"; 
+        return "login";
     }
 
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model) {
-        model.addAttribute("tipoUsuario", "cliente"); 
+        model.addAttribute("tipoUsuario", "cliente");
         model.addAttribute("cliente", new Cliente());
         model.addAttribute("floricultor", new Floricultor());
         return "registro";
@@ -89,3 +85,4 @@ public class RegistroController {
 }
 
 }
+

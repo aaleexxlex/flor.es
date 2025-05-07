@@ -42,6 +42,16 @@ public class FlorController {
         return "";
     }
 
+    @GetMapping("/home")
+    public String mostrarHome(Model model) {
+        try {
+            List<Producto> productos = restTemplate.getForObject(baseUrl + "/productos", List.class);
+            model.addAttribute("productos", productos);
+        } catch (Exception e) {
+            model.addAttribute("productos", new ArrayList<>());
+        }
+        return "home";
+    }
     @PostMapping("/iniciar-sesion")
     public String iniciarSesion(@RequestParam("email") String email, Model model) {
         try {
@@ -63,100 +73,111 @@ public class FlorController {
         }
     }
 
-    @GetMapping("/home")
-    public String mostrarHome(Model model) {
-        try {
-            List<Producto> productos = restTemplate.getForObject(baseUrl + "/productos", List.class);
-            model.addAttribute("productos", productos);
-        } catch (Exception e) {
-            model.addAttribute("productos", new ArrayList<>());
-        }
-        return "home";
-    }
-
     @GetMapping("/cuenta")
-    public String verCuenta(@ModelAttribute("rol") String rol,
-            Model model,
-            @ModelAttribute("usuario") Object usuario,
-            HttpSession session) {
-        if (usuario == null || rol == null) {
-            return "redirect:/login";
+public String verCuenta(@ModelAttribute("rol") String rol,
+                        Model model,
+                        @ModelAttribute("usuario") Object usuario,
+                        HttpSession session) {
+
+    
+    if (usuario == null || rol == null) {
+        String email = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+
+        try {
+            Cliente cliente = restTemplate.getForObject(baseUrl + "/clientes/" + email, Cliente.class);
+            model.addAttribute("usuario", cliente);
+            model.addAttribute("rol", "cliente");
+            usuario = cliente;
+            rol = "cliente";
+        } catch (Exception e1) {
+            try {
+                Floricultor floricultor = restTemplate.getForObject(baseUrl + "/floricultores/" + email, Floricultor.class);
+                model.addAttribute("usuario", floricultor);
+                model.addAttribute("rol", "floricultor");
+                usuario = floricultor;
+                rol = "floricultor";
+            } catch (Exception e2) {
+                return "redirect:/login";
+            }
         }
-
-        if ("cliente".equals(rol)) {
-            List<Pedido> pedidos = new ArrayList<>();
-            try {
-                ResponseEntity<List<Pedido>> response = restTemplate.exchange(
-                        baseUrl + "/pedidos/cliente/" + ((Cliente) usuario).getEmail(),
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<Pedido>>() {
-                        });
-                pedidos = response.getBody();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            model.addAttribute("pedidos", pedidos);
-
-            // 💡 Aquí accedes correctamente a la sesión
-            List<Producto> favoritos = (List<Producto>) session.getAttribute("favoritos");
-            if (favoritos == null)
-                favoritos = new ArrayList<>();
-            model.addAttribute("favoritos", favoritos);
-
-        } else if ("floricultor".equals(rol)) {
-            Floricultor floricultor = (Floricultor) usuario;
-            String email = floricultor.getEmail();
-
-            List<Producto> productos = new ArrayList<>();
-            List<Pedido> pedidosRecibidos = new ArrayList<>();
-            Double mediaValoraciones = 0.0;
-            Long numeroValoraciones = 0L;
-
-            try {
-                ResponseEntity<List<Producto>> response = restTemplate.exchange(
-                        baseUrl + "/productos/floricultor/" + email,
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<Producto>>() {
-                        });
-                productos = response.getBody();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            try {
-                ResponseEntity<List<Pedido>> response = restTemplate.exchange(
-                        baseUrl + "/pedidos/floricultor/" + email,
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<Pedido>>() {
-                        });
-                pedidosRecibidos = response.getBody();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            try {
-                mediaValoraciones = restTemplate.getForObject(
-                        baseUrl + "/valoraciones/floricultor/" + email + "/media",
-                        Double.class);
-                numeroValoraciones = restTemplate.getForObject(
-                        baseUrl + "/valoraciones/floricultor/" + email + "/count",
-                        Long.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            model.addAttribute("floricultor", floricultor);
-            model.addAttribute("productos", productos);
-            model.addAttribute("pedidosRecibidos", pedidosRecibidos);
-            model.addAttribute("mediaValoraciones", mediaValoraciones);
-            model.addAttribute("numeroValoraciones", numeroValoraciones);
-        }
-
-        return "cuenta";
     }
+
+    
+    if ("cliente".equals(rol)) {
+        List<Pedido> pedidos = new ArrayList<>();
+        try {
+            ResponseEntity<List<Pedido>> response = restTemplate.exchange(
+                    baseUrl + "/pedidos/cliente/" + ((Cliente) usuario).getEmail(),
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Pedido>>() {
+                    });
+            pedidos = response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        model.addAttribute("pedidos", pedidos);
+
+        List<Producto> favoritos = (List<Producto>) session.getAttribute("favoritos");
+        if (favoritos == null)
+            favoritos = new ArrayList<>();
+        model.addAttribute("favoritos", favoritos);
+
+    } else if ("floricultor".equals(rol)) {
+        Floricultor floricultor = (Floricultor) usuario;
+        String email = floricultor.getEmail();
+
+        List<Producto> productos = new ArrayList<>();
+        List<Pedido> pedidosRecibidos = new ArrayList<>();
+        Double mediaValoraciones = 0.0;
+        Long numeroValoraciones = 0L;
+
+        try {
+            ResponseEntity<List<Producto>> response = restTemplate.exchange(
+                    baseUrl + "/productos/floricultor/" + email,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Producto>>() {
+                    });
+            productos = response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ResponseEntity<List<Pedido>> response = restTemplate.exchange(
+                    baseUrl + "/pedidos/floricultor/" + email,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Pedido>>() {
+                    });
+            pedidosRecibidos = response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mediaValoraciones = restTemplate.getForObject(
+                    baseUrl + "/valoraciones/floricultor/" + email + "/media",
+                    Double.class);
+            numeroValoraciones = restTemplate.getForObject(
+                    baseUrl + "/valoraciones/floricultor/" + email + "/count",
+                    Long.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        model.addAttribute("floricultor", floricultor);
+        model.addAttribute("productos", productos);
+        model.addAttribute("pedidosRecibidos", pedidosRecibidos);
+        model.addAttribute("mediaValoraciones", mediaValoraciones);
+        model.addAttribute("numeroValoraciones", numeroValoraciones);
+    }
+
+    return "cuenta";
+}
+
 
     @GetMapping("/tienda")
     public String mostrarTienda(

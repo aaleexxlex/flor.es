@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class ClienteController {
     @Autowired
     private ClienteRepository clienteRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // Obtener todos los clientes
     @GetMapping
@@ -27,6 +30,7 @@ public class ClienteController {
     // Crear un cliente
     @PostMapping
     public Cliente createCliente(@RequestBody Cliente cliente) {
+        cliente.setPassword(passwordEncoder.encode(cliente.getPassword()));
         return clienteRepository.save(cliente);
     }
 

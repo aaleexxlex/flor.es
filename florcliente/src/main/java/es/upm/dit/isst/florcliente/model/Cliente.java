@@ -13,7 +13,8 @@ public class Cliente {
    
     private String nombre;
     private String email;
-    
+    private String password;
+
     private List<Pedido> pedidos;
 
     // Getters y Setters

@@ -21,6 +21,7 @@ public class Floricultor {
     private String nombre;
     private String ubicacion;
     private boolean disponibilidad;
+    private String password;
 
     @OneToMany(mappedBy = "floricultor")
     @JsonIgnore

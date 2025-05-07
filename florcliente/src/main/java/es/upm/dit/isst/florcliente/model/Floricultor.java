@@ -14,6 +14,7 @@ public class Floricultor {
     private String email;
     private String ubicacion;
     private boolean disponibilidad;
+    private String password;
 
     private List<Pedido> pedidos;
     private List<Producto> productos;
