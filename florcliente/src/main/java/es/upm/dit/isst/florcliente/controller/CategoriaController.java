@@ -28,6 +28,7 @@ public String filtrarPorFlor(
     @RequestParam(required = false) Double precioMin,
     @RequestParam(required = false) Double precioMax,
     @RequestParam(required = false) Boolean disponible,
+    @RequestParam(required = false) String ocasion, 
     Model model
 ) {
     try {
@@ -50,6 +51,8 @@ public String filtrarPorFlor(
                 .filter(p -> (precioMin == null || p.getPrecio() >= precioMin) &&
                              (precioMax == null || p.getPrecio() <= precioMax))
                 .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
+                .filter(p -> ocasion == null || ocasion.isEmpty() || 
+                             (p.getOcasion() != null && p.getOcasion().equalsIgnoreCase(ocasion))) // NUEVO
                 .toList();
         }
 
@@ -61,6 +64,7 @@ public String filtrarPorFlor(
         model.addAttribute("precioMin", precioMin);
         model.addAttribute("precioMax", precioMax);
         model.addAttribute("disponible", disponible);
+        model.addAttribute("ocasion", ocasion); // NUEVO
 
     } catch (Exception e) {
         model.addAttribute("productos", new ArrayList<>());
@@ -68,7 +72,6 @@ public String filtrarPorFlor(
 
     return "productosPorCategoria";
 }
-
 
     private String obtenerNombrePlural(String tipoFlor) {
         return switch (tipoFlor.toLowerCase()) {
@@ -83,48 +86,52 @@ public String filtrarPorFlor(
     }
 
     @GetMapping("/ramos")
-    public String filtrarRamosConFiltros(
-        @RequestParam(required = false) String color,
-        @RequestParam(required = false) String origen,
-        @RequestParam(required = false) Double precioMin,
-        @RequestParam(required = false) Double precioMax,
-        @RequestParam(required = false) Boolean disponible,
-        Model model
-    ) {
-        try {
-            ResponseEntity<List<Producto>> response = restTemplate.exchange(
-                baseUrl + "/productos",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Producto>>() {}
-            );
-    
-            List<Producto> productos = response.getBody();
-            List<Producto> filtrados = productos.stream()
-                .filter(p -> p.isEsRamo()) // Solo ramos
-                .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
-                .filter(p -> origen == null || origen.isEmpty() || p.getFloricultor().getUbicacion().equalsIgnoreCase(origen))
-                .filter(p -> precioMin == null || p.getPrecio() >= precioMin)
-                .filter(p -> precioMax == null || p.getPrecio() <= precioMax)
-                .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
-                .toList();
-    
-            model.addAttribute("productos", filtrados);
-            model.addAttribute("tituloCategoria", "Ramos");
-            model.addAttribute("tipoFlor", "ramos");
-            model.addAttribute("color", color);
-            model.addAttribute("origen", origen);
-            model.addAttribute("precioMin", precioMin);
-            model.addAttribute("precioMax", precioMax);
-            model.addAttribute("disponible", disponible);
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("productos", new ArrayList<>());
-            model.addAttribute("tituloCategoria", "Ramos");
-        }
-    
-        return "productosPorCategoria";
+public String filtrarRamosConFiltros(
+    @RequestParam(required = false) String color,
+    @RequestParam(required = false) String origen,
+    @RequestParam(required = false) Double precioMin,
+    @RequestParam(required = false) Double precioMax,
+    @RequestParam(required = false) Boolean disponible,
+    @RequestParam(required = false) String ocasion, 
+    Model model
+) {
+    try {
+        ResponseEntity<List<Producto>> response = restTemplate.exchange(
+            baseUrl + "/productos",
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<Producto>>() {}
+        );
+
+        List<Producto> productos = response.getBody();
+        List<Producto> filtrados = productos.stream()
+            .filter(p -> p.isEsRamo())
+            .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
+            .filter(p -> origen == null || origen.isEmpty() || p.getFloricultor().getUbicacion().equalsIgnoreCase(origen))
+            .filter(p -> precioMin == null || p.getPrecio() >= precioMin)
+            .filter(p -> precioMax == null || p.getPrecio() <= precioMax)
+            .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
+            .filter(p -> ocasion == null || ocasion.isEmpty() || 
+                         (p.getOcasion() != null && p.getOcasion().equalsIgnoreCase(ocasion))) 
+            .toList();
+
+        model.addAttribute("productos", filtrados);
+        model.addAttribute("tituloCategoria", "Ramos");
+        model.addAttribute("tipoFlor", "ramos");
+        model.addAttribute("color", color);
+        model.addAttribute("origen", origen);
+        model.addAttribute("precioMin", precioMin);
+        model.addAttribute("precioMax", precioMax);
+        model.addAttribute("disponible", disponible);
+        model.addAttribute("ocasion", ocasion); 
+    } catch (Exception e) {
+        e.printStackTrace();
+        model.addAttribute("productos", new ArrayList<>());
+        model.addAttribute("tituloCategoria", "Ramos");
     }
+
+    return "productosPorCategoria";
+}
     
 
 }

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -137,4 +138,57 @@ public class CarritoController {
         }
         return "redirect:/carrito/ver";
     }
+    @PostMapping("/agregar-ramos")
+public String agregarRamoPersonalizado(
+        @RequestParam("productoIds") List<Long> productoIds,
+        @RequestParam("cantidades") List<Integer> cantidades,
+        HttpSession session,
+        Model model
+) {
+    // Asegúrate de usar la misma lista
+    List<LineaPedido> carrito = (List<LineaPedido>) session.getAttribute("carrito");
+    if (carrito == null) carrito = new ArrayList<>();
+
+    String floricultorEmail = null;
+
+    for (int i = 0; i < productoIds.size(); i++) {
+        Producto producto = new RestTemplate().getForObject(
+                "http://localhost:8080/productos/" + productoIds.get(i),
+                Producto.class
+        );
+
+        if (producto == null) continue;
+
+        if (floricultorEmail == null) {
+            floricultorEmail = producto.getFloricultor().getEmail();
+        } else if (!producto.getFloricultor().getEmail().equals(floricultorEmail)) {
+            session.setAttribute("errorCarrito", "Todas las flores deben ser del mismo floricultor.");
+            return "redirect:/flores";
+        }
+
+        int cantidad = cantidades.get(i);
+
+        Optional<LineaPedido> existente = carrito.stream()
+                .filter(lp -> lp.getProducto().getIdProducto().equals(producto.getIdProducto()))
+                .findFirst();
+
+        if (existente.isPresent()) {
+            LineaPedido lp = existente.get();
+            lp.setCantidad(lp.getCantidad() + cantidad);
+        } else {
+            LineaPedido lp = new LineaPedido();
+            lp.setProducto(producto);
+            lp.setCantidad(cantidad);
+            lp.setPrecioUnitario(producto.getPrecio());
+            carrito.add(lp);
+        }
+    }
+
+    // Al final, guardar la lista completa modificada
+    session.setAttribute("carrito", carrito);
+    session.setAttribute("mensajeExito", "Ramo personalizado añadido correctamente.");
+    return "redirect:/carrito/ver";
+}
+
+
 }
