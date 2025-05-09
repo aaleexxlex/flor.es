@@ -96,7 +96,7 @@ Busca la siguiente línea:
 
 ```html
 <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places"></script>
-
+---
 ### 6. Abrir en el navegador
 
 ```bash
