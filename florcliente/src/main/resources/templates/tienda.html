@@ -15,6 +15,7 @@
       </li>
     </ol>
   </nav>
+<div th:replace="fragments/direccionEntrega :: selectorUbicacion"></div>
 <div th:replace="fragments/categorizacionCircular :: categoriasCirculares"></div>
 <div th:replace="fragments/filtro :: filtroBusqueda(filtroAction='/tienda')"></div>
 <section class="container-fluid py-5 px-5 mx-auto">
@@ -41,6 +42,6 @@
 
 <!-- FOOTER -->
 <footer th:replace="fragments/footer :: footer"></footer>
-
+<div th:replace="fragments/scripts :: scriptsUbicacion"></div>
 </body>
 </html>

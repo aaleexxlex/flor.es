@@ -12,11 +12,45 @@ curl -s -X POST "$BASE_URL/clientes" -H "Content-Type: application/json" -d '{"n
 curl -s -X POST "$BASE_URL/clientes" -H "Content-Type: application/json" -d '{"nombre": "Pedro Nu\u00f1ez", "email": "pedro@example.com", "direccion": "Avenida 321", "password": "hola"}'
 
 ### FLORICULTORES
-curl -s -X POST "$BASE_URL/floricultores" -H "Content-Type: application/json" -d '{"nombre": "Luis Flores", "email": "luis@example.com", "ubicacion": "Madrid", "disponibilidad": true, "password": "hola"}'
-curl -s -X POST "$BASE_URL/floricultores" -H "Content-Type: application/json" -d '{"nombre": "Marta Ramos", "email": "marta@example.com", "ubicacion": "Barcelona", "disponibilidad": true, "password": "hola"}'
-curl -s -X POST "$BASE_URL/floricultores" -H "Content-Type: application/json" -d '{"nombre": "Carlos Verde", "email": "carlos@example.com", "ubicacion": "Valencia", "disponibilidad": true, "password": "hola"}'
-curl -s -X POST "$BASE_URL/floricultores" -H "Content-Type: application/json" -d '{"nombre": "Sofia Azul", "email": "sofia@example.com", "ubicacion": "Sevilla", "disponibilidad": true, "password": "hola"}'
+curl -s -X POST "$BASE_URL/floricultores" -H "Content-Type: application/json" -d '{
+  "nombre": "Luis Flores",
+  "email": "luis@example.com",
+  "ubicacion": "Madrid",
+  "latitud": 40.4168,
+  "longitud": -3.7038,
+  "disponibilidad": true,
+  "password": "hola"
+}'
 
+curl -s -X POST "$BASE_URL/floricultores" -H "Content-Type: application/json" -d '{
+  "nombre": "Marta Ramos",
+  "email": "marta@example.com",
+  "ubicacion": "Barcelona",
+  "latitud": 41.3879,
+  "longitud": 2.1699,
+  "disponibilidad": true,
+  "password": "hola"
+}'
+
+curl -s -X POST "$BASE_URL/floricultores" -H "Content-Type: application/json" -d '{
+  "nombre": "Carlos Verde",
+  "email": "carlos@example.com",
+  "ubicacion": "Valencia",
+  "latitud": 39.4699,
+  "longitud": -0.3763,
+  "disponibilidad": true,
+  "password": "hola"
+}'
+
+curl -s -X POST "$BASE_URL/floricultores" -H "Content-Type: application/json" -d '{
+  "nombre": "Sofia Azul",
+  "email": "sofia@example.com",
+  "ubicacion": "Sevilla",
+  "latitud": 37.3886,
+  "longitud": -5.9823,
+  "disponibilidad": true,
+  "password": "hola"
+}'
 
 ### PRODUCTOS (40)
 curl -s -X POST "$BASE_URL/productos" -H "Content-Type: application/json" -d '{"nombre": "Rosa Roja", "tipoFlor": "Rosa", "color": "Rojo", "precio": 14.76, "cantidad": 15, "imagen": "/images/rosa.png", "esRamo": false,"ocasion": "San Valentin", "floricultor": {"email": "marta@example.com"}}'

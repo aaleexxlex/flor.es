@@ -21,6 +21,8 @@
     <h2 class="mb-3">Flores</h2>
 </section>
 
+<div th:replace="fragments/direccionEntrega :: selectorUbicacion"></div>
+
 <!-- FILTRO Y CATEGORÍAS -->
 <div th:replace="fragments/filtro :: filtroBusqueda(filtroAction='/flores')"></div>
 
@@ -113,6 +115,7 @@
         }
     });
     </script>
-    
+<div th:replace="fragments/scripts :: scriptsUbicacion"></div>
+  
 </body>
 </html>

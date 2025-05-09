@@ -20,6 +20,8 @@ public class Floricultor {
 
     private String nombre;
     private String ubicacion;
+    private double latitud;
+    private double longitud;
     private boolean disponibilidad;
     private String password;
 

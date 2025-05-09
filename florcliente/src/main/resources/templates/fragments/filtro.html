@@ -36,25 +36,6 @@
         </select>
       </div>
 
-
-      <!-- Destino -->
-      <div class="col-md-3">
-        <label for="origen" class="form-label fw-semibold">Destino</label>
-        <select class="form-select rounded-pill border-rosita" name="origen" id="origen">
-          <option value="" th:selected="${origen == null or origen == ''}">Todos</option>
-          <option value="Madrid" th:selected="${origen == 'Madrid'}">Madrid</option>
-          <option value="Barcelona" th:selected="${origen == 'Barcelona'}">Barcelona</option>
-          <option value="Valencia" th:selected="${origen == 'Valencia'}">Valencia</option>
-          <option value="Sevilla" th:selected="${origen == 'Sevilla'}">Sevilla</option>
-          <option value="Zaragoza" th:selected="${origen == 'Zaragoza'}">Zaragoza</option>
-          <option value="Málaga" th:selected="${origen == 'Málaga'}">Málaga</option>
-          <option value="Bilbao" th:selected="${origen == 'Bilbao'}">Bilbao</option>
-          <option value="Alicante" th:selected="${origen == 'Alicante'}">Alicante</option>
-          <option value="Valladolid" th:selected="${origen == 'Valladolid'}">Valladolid</option>
-          <option value="Murcia" th:selected="${origen == 'Murcia'}">Murcia</option>
-        </select>
-      </div>
-
       <!-- Rango de precio-->
       <div class="col-md-4">
         <label class="form-label fw-semibold">Precio (€)</label>

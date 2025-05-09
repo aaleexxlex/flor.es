@@ -10,12 +10,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.*;
 
@@ -43,15 +48,48 @@ public class FlorController {
     }
 
     @GetMapping("/home")
-    public String mostrarHome(Model model) {
-        try {
-            List<Producto> productos = restTemplate.getForObject(baseUrl + "/productos", List.class);
-            model.addAttribute("productos", productos);
-        } catch (Exception e) {
-            model.addAttribute("productos", new ArrayList<>());
+public String mostrarHome(Model model, HttpSession session) {
+    try {
+        ResponseEntity<List<Producto>> response = restTemplate.exchange(
+            baseUrl + "/productos",
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<Producto>>() {}
+        );
+
+        List<Producto> productos = response.getBody();
+        Double lat = (Double) session.getAttribute("lat");
+        Double lng = (Double) session.getAttribute("lng");
+
+        if (productos != null) {
+            if (lat != null && lng != null) {
+                final double MAX_DIST = 50.0;
+                Set<String> floricultoresCercanos = productos.stream()
+                    .map(Producto::getFloricultor)
+                    .distinct()
+                    .filter(f -> calcularDistancia(lat, lng, f.getLatitud(), f.getLongitud()) <= MAX_DIST)
+                    .map(f -> f.getEmail())
+                    .collect(Collectors.toSet());
+
+                productos = productos.stream()
+                    .filter(p -> floricultoresCercanos.contains(p.getFloricultor().getEmail()))
+                    .toList();
+            }
+
+            productos = productos.stream()
+                .limit(6)
+                .toList();
         }
-        return "home";
+
+        model.addAttribute("productos", productos);
+
+    } catch (Exception e) {
+        model.addAttribute("productos", new ArrayList<>());
     }
+
+    return "home";
+}
+
 
     @PostMapping("/iniciar-sesion")
     public String iniciarSesion(@RequestParam("email") String email, Model model) {
@@ -179,92 +217,156 @@ public class FlorController {
     }
 
     @GetMapping("/tienda")
-    public String mostrarTienda(
-            @RequestParam(required = false) String color,
-            @RequestParam(required = false) String origen,
-            @RequestParam(required = false) Double precioMin,
-            @RequestParam(required = false) Double precioMax,
-            @RequestParam(required = false) Boolean disponible,
-            @RequestParam(required = false) String ocasion,
-            Model model) {
-        try {
-            ResponseEntity<List<Producto>> response = restTemplate.exchange(
-                    baseUrl + "/productos",
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<Producto>>() {
-                    });
-
-            List<Producto> productos = response.getBody();
-
-            if (productos != null) {
-                productos = productos.stream()
-                        .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
-                        .filter(p -> origen == null || origen.isEmpty() ||
-                                (origen.equalsIgnoreCase("Madrid")
-                                        && p.getFloricultor().getUbicacion().equalsIgnoreCase("Madrid"))
-                                ||
-                                (origen.equalsIgnoreCase("Barcelona")
-                                        && p.getFloricultor().getUbicacion().equalsIgnoreCase("Barcelona")))
-                        .filter(p -> (precioMin == null || p.getPrecio() >= precioMin) &&
-                                (precioMax == null || p.getPrecio() <= precioMax))
-                        .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
-                        .filter(p -> ocasion == null || ocasion.isEmpty()
-                                || p.getOcasion() != null && p.getOcasion().equalsIgnoreCase(ocasion))
-                        .toList();
-            }
-
-            model.addAttribute("productos", productos);
-            model.addAttribute("color", color);
-            model.addAttribute("origen", origen);
-            model.addAttribute("precioMin", precioMin);
-            model.addAttribute("precioMax", precioMax);
-            model.addAttribute("disponible", disponible);
-            model.addAttribute("ocasion", ocasion);
-
-        } catch (Exception e) {
-            model.addAttribute("productos", new ArrayList<>());
-        }
-
-        return "tienda";
-    }
-    @GetMapping("/flores")
-public String mostrarFloresSueltas(
+public String mostrarTienda(
         @RequestParam(required = false) String color,
-        @RequestParam(required = false) String origen,
         @RequestParam(required = false) Double precioMin,
         @RequestParam(required = false) Double precioMax,
         @RequestParam(required = false) Boolean disponible,
         @RequestParam(required = false) String ocasion,
-        Model model) {
+        Model model,
+        HttpSession session) {
+
     try {
         ResponseEntity<List<Producto>> response = restTemplate.exchange(
                 baseUrl + "/productos",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Producto>>() {
-                });
+                new ParameterizedTypeReference<List<Producto>>() {}
+        );
 
         List<Producto> productos = response.getBody();
+        Double lat = (Double) session.getAttribute("lat");
+        Double lng = (Double) session.getAttribute("lng");
+        model.addAttribute("lat", lat);
+        model.addAttribute("lng", lng);
 
         if (productos != null) {
+            if (lat != null && lng != null) {
+                final double MAX_DIST = 50.0;
+                Set<String> floricultoresCercanos = productos.stream()
+                        .map(Producto::getFloricultor)
+                        .distinct()
+                        .filter(f -> calcularDistancia(lat, lng, f.getLatitud(), f.getLongitud()) <= MAX_DIST)
+                        .map(f -> f.getEmail())
+                        .collect(Collectors.toSet());
+
+                productos = productos.stream()
+                        .filter(p -> floricultoresCercanos.contains(p.getFloricultor().getEmail()))
+                        .toList();
+            }
+
             productos = productos.stream()
-                    .filter(p -> !p.isEsRamo()) // Solo flores sueltas
                     .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
-                    .filter(p -> origen == null || origen.isEmpty() ||
-                            (origen.equalsIgnoreCase("Madrid") && p.getFloricultor().getUbicacion().equalsIgnoreCase("Madrid"))
-                            || (origen.equalsIgnoreCase("Barcelona") && p.getFloricultor().getUbicacion().equalsIgnoreCase("Barcelona")))
                     .filter(p -> (precioMin == null || p.getPrecio() >= precioMin) &&
-                            (precioMax == null || p.getPrecio() <= precioMax))
+                                 (precioMax == null || p.getPrecio() <= precioMax))
                     .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
-                    .filter(p -> ocasion == null || ocasion.isEmpty()
-                            || (p.getOcasion() != null && p.getOcasion().equalsIgnoreCase(ocasion)))
+                    .filter(p -> ocasion == null || ocasion.isEmpty() ||
+                                 (p.getOcasion() != null && p.getOcasion().equalsIgnoreCase(ocasion)))
                     .toList();
         }
 
         model.addAttribute("productos", productos);
         model.addAttribute("color", color);
-        model.addAttribute("origen", origen);
+        model.addAttribute("precioMin", precioMin);
+        model.addAttribute("precioMax", precioMax);
+        model.addAttribute("disponible", disponible);
+        model.addAttribute("ocasion", ocasion);
+
+    } catch (Exception e) {
+        model.addAttribute("productos", new ArrayList<>());
+    }
+
+    return "tienda";
+}
+
+    
+  @PostMapping("/borrarUbicacion")
+public String borrarUbicacion(HttpSession session, HttpServletRequest request) {
+    session.removeAttribute("lat");
+    session.removeAttribute("lng");
+
+    // Redirige a la página desde la que vino el usuario
+    String referer = request.getHeader("Referer");
+    return "redirect:" + (referer != null ? referer : "/");
+}
+
+
+    
+    private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Radio de la Tierra en km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+    @PostMapping("/guardarUbicacion")
+public ResponseEntity<Void> guardarUbicacion(
+    @RequestParam double lat,
+    @RequestParam double lng,
+    HttpSession session) {
+
+    session.setAttribute("lat", lat);
+    session.setAttribute("lng", lng);
+    return ResponseEntity.ok().build();
+}
+
+    
+    @GetMapping("/flores")
+public String mostrarFloresSueltas(
+    @RequestParam(required = false) String color,
+    @RequestParam(required = false) Double precioMin,
+    @RequestParam(required = false) Double precioMax,
+    @RequestParam(required = false) Boolean disponible,
+    @RequestParam(required = false) String ocasion,
+    Model model,
+    HttpSession session
+) {
+    try {
+        ResponseEntity<List<Producto>> response = restTemplate.exchange(
+            baseUrl + "/productos",
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<Producto>>() {}
+        );
+
+        List<Producto> productos = response.getBody();
+        Double lat = (Double) session.getAttribute("lat");
+        Double lng = (Double) session.getAttribute("lng");
+
+        if (productos != null) {
+            productos = productos.stream()
+                .filter(p -> !p.isEsRamo())
+                .toList();
+
+            if (lat != null && lng != null) {
+                final double MAX_DIST = 50.0;
+                Set<String> floricultoresCercanos = productos.stream()
+                    .map(Producto::getFloricultor)
+                    .distinct()
+                    .filter(f -> calcularDistancia(lat, lng, f.getLatitud(), f.getLongitud()) <= MAX_DIST)
+                    .map(f -> f.getEmail())
+                    .collect(Collectors.toSet());
+
+                productos = productos.stream()
+                    .filter(p -> floricultoresCercanos.contains(p.getFloricultor().getEmail()))
+                    .toList();
+            }
+
+            productos = productos.stream()
+                .filter(p -> color == null || color.isEmpty() || p.getColor().equalsIgnoreCase(color))
+                .filter(p -> (precioMin == null || p.getPrecio() >= precioMin) &&
+                             (precioMax == null || p.getPrecio() <= precioMax))
+                .filter(p -> disponible == null || !disponible || p.getCantidad() > 0)
+                .filter(p -> ocasion == null || ocasion.isEmpty() ||
+                             (p.getOcasion() != null && p.getOcasion().equalsIgnoreCase(ocasion)))
+                .toList();
+        }
+
+        model.addAttribute("productos", productos);
+        model.addAttribute("color", color);
         model.addAttribute("precioMin", precioMin);
         model.addAttribute("precioMax", precioMax);
         model.addAttribute("disponible", disponible);
@@ -276,6 +378,7 @@ public String mostrarFloresSueltas(
 
     return "flores";
 }
+
 
     @GetMapping("/")
     public String redirigirRaiz() {

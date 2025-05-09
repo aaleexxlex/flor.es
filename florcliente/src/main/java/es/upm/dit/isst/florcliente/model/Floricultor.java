@@ -15,6 +15,8 @@ public class Floricultor {
     private String ubicacion;
     private boolean disponibilidad;
     private String password;
+    private double latitud;
+    private double longitud;
 
     private List<Pedido> pedidos;
     private List<Producto> productos;

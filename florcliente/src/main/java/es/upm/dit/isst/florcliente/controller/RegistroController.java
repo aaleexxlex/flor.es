@@ -35,8 +35,12 @@ public class RegistroController {
     }
 
     @PostMapping("/registro")
-    public String registrarUsuario(
+public String registrarUsuario(
         @RequestParam String tipoUsuario,
+        @RequestParam(required = false) String ciudad,
+        @RequestParam(required = false) String direccion,
+        @RequestParam(required = false) Double lat,
+        @RequestParam(required = false) Double lng,
         @ModelAttribute Cliente cliente,
         @ModelAttribute Floricultor floricultor,
         Model model) {
@@ -47,9 +51,7 @@ public class RegistroController {
         try {
             restTemplate.getForObject(baseUrl + "/clientes/" + cliente.getEmail(), Cliente.class);
             emailExiste = true;
-        } catch (Exception e) {
-            // No existe, se puede registrar
-        }
+        } catch (Exception ignored) {}
 
         if (emailExiste) {
             model.addAttribute("error", "Ya existe un cliente registrado con ese email.");
@@ -65,9 +67,7 @@ public class RegistroController {
         try {
             restTemplate.getForObject(baseUrl + "/floricultores/" + floricultor.getEmail(), Floricultor.class);
             emailExiste = true;
-        } catch (Exception e) {
-            // No existe, se puede registrar
-        }
+        } catch (Exception ignored) {}
 
         if (emailExiste) {
             model.addAttribute("error", "Ya existe un floricultor registrado con ese email.");
@@ -77,12 +77,17 @@ public class RegistroController {
             return "registro";
         }
 
+        floricultor.setUbicacion(ciudad);
+        floricultor.setLatitud(lat);
+        floricultor.setLongitud(lng);
         floricultor.setDisponibilidad(true);
+
         restTemplate.postForObject(baseUrl + "/floricultores", floricultor, Floricultor.class);
     }
 
     return "redirect:/login";
 }
+
 
 }
 

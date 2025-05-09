@@ -22,11 +22,11 @@
     </div>
   </section>
   
+  <div th:replace="fragments/direccionEntrega :: selectorUbicacion"></div>
   <div th:replace="fragments/categorizacionCircular :: categoriasCirculares"></div>
 
-  
   <section class="container-fluid py-5 px-5 mx-auto">
-    <h3 class="mb-4">Personaliza tu ramo</h3>
+    <h3 class="mb-4">Algunas de nuestras flores</h3>
   
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4 mt-3">
       <div class="col" th:each="producto, iterStat : ${productos}" th:if="${iterStat.count <= 6}">
@@ -71,6 +71,7 @@
 
 <!-- FOOTER -->
 <footer th:replace="fragments/footer :: footer"></footer>
+<div th:replace="fragments/scripts :: scriptsUbicacion"></div>
 
 </body>
 </html>

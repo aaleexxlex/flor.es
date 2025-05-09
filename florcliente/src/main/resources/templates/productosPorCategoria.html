@@ -16,7 +16,7 @@
       </li>
     </ol>
   </nav>
-  
+<div th:replace="fragments/direccionEntrega :: selectorUbicacion"></div> 
 <div th:replace="fragments/categorizacionCircular :: categoriasCirculares"></div>
 <div th:replace="fragments/filtro :: filtroBusqueda(filtroAction='/home/' + ${tipoFlor})"></div>
 
@@ -46,6 +46,8 @@
 </section>
 
 <footer th:replace="fragments/footer :: footer"></footer>
+<div th:replace="fragments/scripts :: scriptsUbicacion"></div>
+
 </body>
 </html>
 
