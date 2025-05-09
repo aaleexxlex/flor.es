@@ -59,8 +59,54 @@ bash
 chmod +x poblar.sh
 ./poblar.sh
 ```
+### 5. Configurar la API de Google Maps
+Para que la funcionalidad de mapas y autocompletado de direcciones funcione correctamente en la aplicación, es necesario obtener una clave de API de Google Maps y activarla para varios servicios de Google.
 
-### 5. Abrir en el navegador
+¿Por qué es necesaria?
+La plataforma flor.es utiliza:
+
+Maps JavaScript API: para mostrar mapas en el frontend.
+
+Places API: para autocompletar direcciones en los formularios.
+
+Geocoding API: para convertir direcciones en coordenadas geográficas (latitud y longitud).
+
+Pasos para obtener y configurar tu clave API
+Ve a https://console.cloud.google.com/.
+
+Crea un nuevo proyecto (o selecciona uno ya creado).
+
+En el menú lateral izquierdo, accede a:
+
+API y servicios → Biblioteca
+
+Busca y activa estas 3 APIs:
+
+✅ Maps JavaScript API
+
+✅ Places API
+
+✅ Geocoding API
+
+Luego ve a API y servicios → Credenciales
+
+Haz clic en Crear credencial → Clave de API
+
+Copia la clave generada.
+
+Opcional pero recomendado: puedes configurar restricciones para que solo funcione desde tu dominio o localhost.
+
+¿Dónde poner la API Key?
+Debes pegar tu clave en los siguientes archivos del cliente:
+
+florcliente/src/main/resources/templates/fragments/script.html
+
+florcliente/src/main/resources/templates/registro.html
+
+En ambos casos, reemplaza API_KEY por tu clave real:
+
+<script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places"></script>
+### 6. Abrir en el navegador
 
 ```bash
 http://localhost:8083/home
