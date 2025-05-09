@@ -59,8 +59,45 @@ bash
 chmod +x poblar.sh
 ./poblar.sh
 ```
+### 5. Configurar la API de Google Maps
 
-### 5. Abrir en el navegador
+La aplicación utiliza la API de Google Maps para mostrar mapas, autocompletar direcciones y convertir direcciones en coordenadas geográficas. Es necesario configurar una clave API de Google para que estas funcionalidades funcionen correctamente.
+
+#### APIs necesarias
+
+Debes activar las siguientes APIs en tu cuenta de Google Cloud:
+
+- Maps JavaScript API
+- Places API
+- Geocoding API
+
+#### Pasos para obtener la clave API
+
+1. Accede a https://console.cloud.google.com/
+2. Crea un nuevo proyecto o selecciona uno existente.
+3. Ve a "API y servicios" > "Biblioteca" y activa las siguientes:
+   - Maps JavaScript API
+   - Places API
+   - Geocoding API
+4. Ve a "API y servicios" > "Credenciales".
+5. Haz clic en "Crear credencial" > "Clave de API".
+6. Copia la clave generada.
+
+Opcionalmente puedes restringir la clave para que solo funcione desde `localhost` o desde un dominio específico.
+
+#### Dónde colocar la clave API
+
+Reemplaza el texto `API_KEY` por tu clave real en los siguientes archivos:
+
+- `florcliente/src/main/resources/templates/fragments/script.html`
+- `florcliente/src/main/resources/templates/registro.html`
+
+Busca la siguiente línea:
+
+```bash
+<script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places"></script>
+```
+### 6. Abrir en el navegador
 
 ```bash
 http://localhost:8083/home
