@@ -94,9 +94,9 @@ Reemplaza el texto `API_KEY` por tu clave real en los siguientes archivos:
 
 Busca la siguiente línea:
 
-```html
+```bash
 <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places"></script>
----
+```
 ### 6. Abrir en el navegador
 
 ```bash
