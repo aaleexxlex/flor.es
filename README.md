@@ -60,52 +60,43 @@ chmod +x poblar.sh
 ./poblar.sh
 ```
 ### 5. Configurar la API de Google Maps
-Para que la funcionalidad de mapas y autocompletado de direcciones funcione correctamente en la aplicación, es necesario obtener una clave de API de Google Maps y activarla para varios servicios de Google.
 
-¿Por qué es necesaria?
-La plataforma flor.es utiliza:
+La aplicación utiliza la API de Google Maps para mostrar mapas, autocompletar direcciones y convertir direcciones en coordenadas geográficas. Es necesario configurar una clave API de Google para que estas funcionalidades funcionen correctamente.
 
-Maps JavaScript API: para mostrar mapas en el frontend.
+#### APIs necesarias
 
-Places API: para autocompletar direcciones en los formularios.
+Debes activar las siguientes APIs en tu cuenta de Google Cloud:
 
-Geocoding API: para convertir direcciones en coordenadas geográficas (latitud y longitud).
+- Maps JavaScript API
+- Places API
+- Geocoding API
 
-Pasos para obtener y configurar tu clave API
-Ve a https://console.cloud.google.com/.
+#### Pasos para obtener la clave API
 
-Crea un nuevo proyecto (o selecciona uno ya creado).
+1. Accede a https://console.cloud.google.com/
+2. Crea un nuevo proyecto o selecciona uno existente.
+3. Ve a "API y servicios" > "Biblioteca" y activa las siguientes:
+   - Maps JavaScript API
+   - Places API
+   - Geocoding API
+4. Ve a "API y servicios" > "Credenciales".
+5. Haz clic en "Crear credencial" > "Clave de API".
+6. Copia la clave generada.
 
-En el menú lateral izquierdo, accede a:
+Opcionalmente puedes restringir la clave para que solo funcione desde `localhost` o desde un dominio específico.
 
-API y servicios → Biblioteca
+#### Dónde colocar la clave API
 
-Busca y activa estas 3 APIs:
+Reemplaza el texto `API_KEY` por tu clave real en los siguientes archivos:
 
-✅ Maps JavaScript API
+- `florcliente/src/main/resources/templates/fragments/script.html`
+- `florcliente/src/main/resources/templates/registro.html`
 
-✅ Places API
+Busca la siguiente línea:
 
-✅ Geocoding API
-
-Luego ve a API y servicios → Credenciales
-
-Haz clic en Crear credencial → Clave de API
-
-Copia la clave generada.
-
-Opcional pero recomendado: puedes configurar restricciones para que solo funcione desde tu dominio o localhost.
-
-¿Dónde poner la API Key?
-Debes pegar tu clave en los siguientes archivos del cliente:
-
-florcliente/src/main/resources/templates/fragments/script.html
-
-florcliente/src/main/resources/templates/registro.html
-
-En ambos casos, reemplaza API_KEY por tu clave real:
-
+```html
 <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=places"></script>
+
 ### 6. Abrir en el navegador
 
 ```bash
